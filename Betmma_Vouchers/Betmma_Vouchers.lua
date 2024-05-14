@@ -283,11 +283,10 @@ do
     local name="Gold Coin"
     local id="gold_coin"
     local gold_coin_loc_txt = {
-        name = name,
+        name = "金币",
         text = {
-            "Gain {C:money}$#1#{} immediately.",
-            "{C:attention}Small Blind{} gives",
-            "no reward money",
+            "立即获得{C:money}$#1#",
+            "{C:attention}小盲注{}将失去奖励金"
             -- yes it literally does nothing bad after white stake
         }
     }
@@ -462,11 +461,11 @@ do
     local name="Round Up"
     local id="round_up"
     local loc_txt = {
-        name = name,
+        name = "凑个整儿",
         text = {
-            "{C:blue}Chips{} always round up",
-            "to nearest tens",
-            "when calculating hands"
+            "出牌计分时",
+            "每次计入的{C:blue}筹码",
+            "均向上取整至十位数"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -485,11 +484,11 @@ do
     local name="Round Up Plus"
     local id="round_up_plus"
     local loc_txt = {
-        name = name,
+        name = "凑个整儿 Plus版",
         text = {
-            "{C:red}Mult{} always round up",
-            "to nearest tens",
-            "when calculating hands"
+            "出牌计分时",
+            "每次计入的{C:red}倍率",
+            "均向上取整至十位数"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -526,13 +525,12 @@ do
     local name="Event Horizon"
     local id="event_horizon"
     local loc_txt = {
-        name = name,
+        name = "事件视界",
         text = {
-            "{C:green}#1# in #2#{} chance to",
-            "create a {C:spectral}Black Hole{} card",
-            "when opening a planet pack.",
-            "Create {C:attention}2{} random",
-            "{C:dark_edition}Negative{} {C:planet}Planet{} cards now",
+            "购买本券后即刻生成",
+            "{C:attention}2{}张随机的{C:dark_edition}负片{C:planet}星球牌",
+            "开启天体包时有{C:green}#1#/#2#{}的几率",
+            "生成一张{C:spectral}黑洞"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -551,13 +549,13 @@ do
     local name="Engulfer"
     local id="engulfer"
     local loc_txt = {
-        name = name,
+        name = "万物终焉",
         text = {
-            "{C:green}#1# in #2#{} chance to",
-            "create a {C:spectral}Black Hole{} card",
-            "when using a planet card.",
-            "Create a {C:spectral}Black Hole{} now",
-            "{C:inactive}(Must have room)"
+            "购买本券后",
+            "即刻生成一张{C:spectral}黑洞",
+            "使用星球牌时有{C:green}#1#/#2#{}的几率",
+            "生成一张{C:spectral}黑洞",
+            "{C:inactive}（必须有空间）"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -642,13 +640,12 @@ do
     local name="Target"
     local id="target"
     local loc_txt = {
-        name = name,
+        name = "射箭标靶",
         text = {
-            "If chips scored are under",
-            "{C:attention}#1#%{} of required chips",
-            "at end of round,",
-            "create a random {C:attention}Joker{} card",
-            "{C:inactive}(Must have room)"
+            "若回合结束时的得分",
+            "为最低要求的{C:attention}#1#%{}或更低",
+            "随机生成一张{C:attention}小丑牌",
+            "{C:inactive}（必须有空间）"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -667,13 +664,12 @@ do
     local name="Bull's Eye"
     local id="bulls_eye"
     local loc_txt = {
-        name = name,
+        name = "正中十环",
         text = {
-            "If chips scored are under",
-            "{C:attention}#1#%{} of required chips",
-            "at end of round,",
-            "create a random",
-            "{C:dark_edition}Negative{} {C:attention}Joker{} card"
+            "若回合结束时的得分",
+            "为最低要求的{C:attention}#1#%{}或更低",
+            "随机生成一张{C:dark_edition}负片{C:attention}小丑牌",
+            "{C:inactive}（必须有空间）"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -704,8 +700,8 @@ do
         end_round_ref()
     end
 
-    G.localization.misc.dictionary.k_target_generate = "Target!"
-    G.localization.misc.dictionary.k_bulls_eye_generate = "Bull's Eye!"
+    G.localization.misc.dictionary.k_target_generate = "标靶！"
+    G.localization.misc.dictionary.k_bulls_eye_generate = "正中十环！"
 
 
 end --
@@ -879,11 +875,11 @@ do
     local name="Scrawl"
     local id="scrawl"
     local loc_txt = {
-        name = name,
+        name = "狗爬字",
         text = {
-            "Gives {C:money}$#1#{} for each joker you have,",
-            "then randomly create {C:attention}Jokers{}",
-            "until joker slots are full"
+            "每有一张小丑牌给予{C:money}$#1#",
+            "并随机生成{C:attention}小丑牌",
+            "直至填满槽位"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -902,10 +898,10 @@ do
     local name="Scribble"
     local id="scribble"
     local loc_txt = {
-        name = name,
+        name = "胡写乱画",
         text = {
-            "Randomly create {C:attention}#1#{}",
-            "{C:dark_edition}Negative{} {C:spectral}Spectral{} cards"
+            "随机生成{C:attention}#1#{}张",
+            "{C:dark_edition}负片{C:spectral}幻灵牌"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -945,11 +941,10 @@ do
     local name="Reserve Area"
     local id="reserve_area"
     local loc_txt = {
-        name = name,
+        name = "打包带走",
         text = {
-            "You can reserve {C:tarot}Tarot{}",
-            "cards instead of using them",
-            "when opening a {C:tarot}Tarot Pack{}"
+            "在{C:tarot}秘术包{}中选取的{C:tarot}塔罗牌",
+            "可存入消耗牌槽位"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -968,12 +963,12 @@ do
     local name="Reserve Area Plus"
     local id="reserve_area_plus"
     local loc_txt = {
-        name = name,
+        name = "连吃带拿",
         text = {
-            "You can reserve {C:spectral}Spectral{}",
-            "cards instead of using them",
-            "when opening a {C:spectral}Spectral Pack{}.",
-            "Also get an {C:attention}Ethereal Tag{}"
+            "在{C:spectral}幻灵包{}中选取的{C:spectral}幻灵牌",
+            "可存入消耗牌槽位",
+            "且开启{C:spectral}幻灵包{}时",
+            "额外获得一个{C:attention}空灵标签"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -1081,14 +1076,12 @@ do
     local name="Overkill"
     local id="overkill"
     local loc_txt = {
-        name = name,
+        name = "用力过猛",
         text = {
-            "If chips scored are above",
-            "{C:attention}#1#%{} of required chips",
-            "at end of round, add",
-            "{C:dark_edition}Foil{}, {C:dark_edition}Holographic{}, or",
-            "{C:dark_edition}Polychrome{} edition",
-            "to a random {C:attention}Joker"
+            "若回合结束时的得分",
+            "为最低要求的{C:attention}#1#%{}或更高",
+            "为随机一张{C:attention}小丑牌添加{C:dark_edition}闪箔{}、",
+            "{C:dark_edition}镭射{}或{C:dark_edition}多彩{}的其中一种"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -1107,15 +1100,14 @@ do
     local name="Big Blast"
     local id="big_blast"
     local loc_txt = {
-        name = name,
+        name = "瞬间爆炸",
         text = {
-            "If chips scored are above",
-            "{X:mult,C:white}X#1#{} of required chips",
-            "at end of round, add",
-            "{C:dark_edition}Negative{} edition to a",
-            "random {C:attention}Joker{}, and",
-            "increase the target amount",
-            "{C:inactive}(This Negative can override){}"
+            "若回合结束时的得分",
+            "为最低要求的{X:mult,C:white}#1#倍{}或更高",
+            "为随机一张{C:attention}小丑牌添加{C:dark_edition}负片",
+            "并提升上述倍数要求",
+            "{C:inactive}（本券提供的负片",
+            "{C:inactive}可覆盖小丑牌的原有版本）"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -1181,20 +1173,20 @@ do
         end_round_ref()
     end
 
-    G.localization.misc.dictionary.k_overkill_edition = "Overkill!"
-    G.localization.misc.dictionary.k_big_blast_edition = "Big Blast!"
+    G.localization.misc.dictionary.k_overkill_edition = "射穿！"
+    G.localization.misc.dictionary.k_big_blast_edition = "炸飞！"
 
 
 end --
 do 
 
-    local name="3D Boosters"
+    local name="3D Booster"
     local id="3d_boosters"
     local loc_txt = {
-        name = name,
+        name = "三维堆叠",
         text = {
-            "{C:attention}+1{} Booster Pack",
-            "available in shop"
+            "商店中可供选购的",
+            "补充包数量{C:attention}+1"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -1320,14 +1312,12 @@ do
     local name="B1G50%"
     local id="b1g50"
     local loc_txt = {
-        name = name,
+        name = "第二张半价",
         text = {
-            "When you redeem a",
-            "{C:attention}tier 1{} Voucher,",
-            "have {C:green}#1#%{} chance to",
-            "redeem the {C:attention}tier 2{} one",
-            "and lose {C:money}$#2#{}",
-            "{C:inactive}(This chance can't be doubled){}"
+            "兑换优惠券时有{C:green}#1#%{}的几率",
+            "直接获得它的{C:attention}高级变种",
+            "并失去{C:money}$#2#",
+            "{C:inactive}（上述几率无法倍增）"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -1694,13 +1684,13 @@ do
     local name="Prologue"
     local id="prologue"
     local loc_txt = {
-        name = name,
+        name = "前言",
         text = {
-            "When blind begins, create",
-            "an {C:attention}Eternal{} {C:tarot}Tarot{} card.",
-            "This card disappears when a",
-            "new Prologue card is created",
-            "{C:inactive}(Must have room)"
+            "盲注开局时",
+            "生成一张{C:attention}永恒{C:tarot}塔罗牌",
+            "{C:inactive}（必须有空间）",
+            "该牌会在本优惠券",
+            "生成新牌前消失"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -1718,14 +1708,14 @@ do
     local name="Epilogue"
     local id="epilogue"
     local loc_txt = {
-        name = name,
+        name = "后记",
         text = {
-            "{C:attention}+1{} consumable slot.",
-            "When blind ends, create an",
-            "{C:attention}Eternal{} {C:spectral}Spectral{} card.",
-            "This card disappears when a",
-            "new Epilogue card is created",
-            "{C:inactive}(Must have room)"
+            "消耗牌槽位{C:attention}+1",
+            "盲注结束时",
+            "生成一张{C:attention}永恒{C:spectral}幻灵牌",
+            "{C:inactive}（必须有空间）",
+            "该牌会在本优惠券",
+            "生成新牌前消失"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -1815,11 +1805,11 @@ do
     local name="Gold Round Up"
     local id="gold_round_up"
     local loc_txt = {
-        name = name,
+        name = "凑个整儿 黄金版",
         text = {
-            "Your {C:money}money{} always rounds up",
-            "to nearest even number",
-            "{C:inactive}(Round Up + Gold Coin){}"
+            "你的{C:money}资金{}永远",
+            "向上取至最近的偶数值",
+            "{C:inactive}（凑个整儿 + 金币）"
         }
     }
     local this_v = SMODS.Voucher:new(

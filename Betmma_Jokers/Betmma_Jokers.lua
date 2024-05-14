@@ -32,10 +32,10 @@ function SMODS.INIT.BetmmaJokers()
             }
         },
         hasty = {
-            name = "Hasty Joker",
+            name = "急迫小丑",
             text = {
-                "Earn {C:money}$#1#{} if round",
-            "ends after first hand",
+                "若第一次出牌就击败盲注",
+                "获得{C:money}$#1#"
             }
         },
         errorr = {
