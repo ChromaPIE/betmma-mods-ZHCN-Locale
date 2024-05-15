@@ -529,7 +529,7 @@ do
     local loc_txt = {
         name = "事件视界",
         text = {
-            "购买本券后即刻生成",
+            "购买本奖券后即刻生成",
             "{C:attention}2{}张随机的{C:dark_edition}负片{C:planet}星球牌",
             "开启天体包时有{C:green}#1#/#2#{}的几率",
             "生成一张{C:spectral}黑洞"
@@ -553,7 +553,7 @@ do
     local loc_txt = {
         name = "万物终焉",
         text = {
-            "购买本券后",
+            "购买本奖券后",
             "即刻生成一张{C:spectral}黑洞",
             "使用星球牌时有{C:green}#1#/#2#{}的几率",
             "生成一张{C:spectral}黑洞",
@@ -821,9 +821,9 @@ do
     local name="Skip"
     local id="skip"
     local loc_txt = {
-        name = name,
+        name = "大步流星",
         text = {
-            "Earn {C:money}$#1#{} when skipping blind"
+            "跳过盲注时获得{C:money}$#1#"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -842,9 +842,9 @@ do
     local name="Skipper"
     local id="skipper"
     local loc_txt = {
-        name = name,
+        name = "乘风破浪",
         text = {
-            "Get a {C:attention}Double Tag{} when skipping blind"
+            "跳过盲注时获得一个{C:attention}双倍标签"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -1108,7 +1108,7 @@ do
             "为最低要求的{X:mult,C:white}#1#倍{}或更高",
             "为随机一张{C:attention}小丑牌添加{C:dark_edition}负片",
             "并提升上述倍数要求",
-            "{C:inactive}（本券提供的负片",
+            "{C:inactive}（本奖券提供的负片",
             "{C:inactive}可覆盖小丑牌的原有版本）"
         }
     }
@@ -1206,12 +1206,10 @@ do
     local name="4D Boosters"
     local id="4d_boosters"
     local loc_txt = {
-        name = name,
+        name = "四维堆叠",
         text = {
-            "Rerolls apply to",
-            "{C:attention}Booster Packs{}, but",
-            "rerolled packs cost",
-            "{C:attention}$#1#{} more"
+            "重掷会对{C:attention}补充包{}生效",
+            "但会使新的补充包价格上涨{C:attention}$#1#"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -1316,7 +1314,7 @@ do
     local loc_txt = {
         name = "第二张半价",
         text = {
-            "兑换优惠券时有{C:green}#1#%{}的几率",
+            "兑换奖券时有{C:green}#1#%{}的几率",
             "直接获得它的{C:attention}高级变种",
             "并失去{C:money}$#2#",
             "{C:inactive}（上述几率无法倍增）"
@@ -1691,7 +1689,7 @@ do
             "盲注开局时",
             "生成一张{C:attention}永恒{C:tarot}塔罗牌",
             "{C:inactive}（必须有空间）",
-            "该牌会在本优惠券",
+            "该牌会在本奖券",
             "生成新牌前消失"
         }
     }
@@ -1716,7 +1714,7 @@ do
             "盲注结束时",
             "生成一张{C:attention}永恒{C:spectral}幻灵牌",
             "{C:inactive}（必须有空间）",
-            "该牌会在本优惠券",
+            "该牌会在本奖券",
             "生成新牌前消失"
         }
     }
