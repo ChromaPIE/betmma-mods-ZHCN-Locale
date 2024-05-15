@@ -1509,12 +1509,12 @@ do
     local name="Flipped Card"
     local id="flipped_card"
     local loc_txt = {
-        name = name,
+        name = "暗斗明争",
         text = {
-            "You can {C:attention}flip{} up to #1# cards",
-            "once before playing each hand.",
-            "{C:attention}Flipped{} cards will return",
-            "to your hand after they are played"
+            "每次出牌前有一次机会",
+            "将至多#1#张牌{C:attention}翻面",
+            "{C:attention}背面朝上{}的卡牌",
+            "会在计分完毕后回到手中"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -1532,11 +1532,12 @@ do
     local name="Double Flipped Card"
     local id="double_flipped_card"
     local loc_txt = {
-        name = name,
+        name = "潜行伏击",
         text = {
-            "{C:attention}Flipped{} cards are",
-            "held in hand when scoring",
-            "and can trigger hold-in-hand effects"
+            "{C:attention}背面朝上{}的卡牌",
+            "将在手牌中参与计分",
+            "且可触发手牌中效果",
+            "{C:inactive}（如钢铁牌）"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -1604,7 +1605,7 @@ do
         G.GAME.current_round.flips_left=(G.GAME.current_round.flips_left or 1)-1
     end
 
-    G.localization.misc.dictionary.b_flip_hand = "Flip"
+    G.localization.misc.dictionary.b_flip_hand = "翻面"
 
     local G_FUNCS_draw_from_play_to_discard_ref=G.FUNCS.draw_from_play_to_discard
     G.FUNCS.draw_from_play_to_discard = function(e)
@@ -2135,11 +2136,10 @@ do
     local name="Darkness"
     local id="darkness"
     local loc_txt = {
-        name = name,
+        name = "暗物质",
         text = {
-            "{C:dark_edition}Negative{} cards",
-            "appear {C:attention}#1#X{} more often",
-            "{C:inactive}(Glow Up + Antimatter)"
+            "{C:dark_edition}负片{}牌出现频率{C:attention}X#1#",
+            "{C:inactive}（焕彩 + 反物质）"
         }
     }
     local this_v = SMODS.Voucher:new(
