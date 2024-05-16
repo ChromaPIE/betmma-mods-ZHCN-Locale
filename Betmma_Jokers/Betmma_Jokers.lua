@@ -13,20 +13,22 @@ function SMODS.INIT.BetmmaJokers()
     
     local localization = {
         jjookkeerr = {
-            name = "JJookkeerr",
+            name = "西一袄小，吃藕丑",
             text = {
-                "Jokers with \"Joker\"",
-                "in their names",
-                "each gives {X:mult,C:white} X#1# {} Mult",
+                "每张名字里包含“小丑”",
+                "二字的小丑牌",
+                "给予{X:mult,C:white} X#1# {}倍率",
+                "{s:0.8,C:inactive}由于技术原因，极少部分",
+                "{s:0.8,C:inactive}小丑牌可能无法计入"
                 -- if I count right there are 24 common, 6 uncommon and 3 rare jokers that satisfy this condition
             }
         },
         ascension = {
-            name = "Ascension",
+            name = "金宝升天",
             text = {
-                "Increase the tier of",
-                "played poker hand by 1 ",
-                "(e.g. High Card counts as One Pair)",
+                "打出的牌型将视为上级牌型",
+                "来计算基础筹码和倍率",
+                "（例如：高牌视为对子，对子视为两对）",
                 -- How the poker hand "contained" is calculated should be clarified:
                 -- If you play a Straight Flush, originally it contains Straight Flush, Flush, Straight and High Card. After triggering ascension it is counted as 5oak and contains 5oak, Straight Flush, Flush, Straight and High Card. Though a real 5oak contains 4oak and 3oak, this 5oak from ascension doesn't contain them.
             }
@@ -47,12 +49,12 @@ function SMODS.INIT.BetmmaJokers()
             }
         },
         piggy_bank = {
-            name = "Piggy Bank",
+            name = "猪猪存钱罐",
             text = {
-                "Put half of earned dollars",
-                "into it and gain {C:red}+#2#{} Mult",
-                "for each dollar",
-                "{C:inactive}(Currently {C:red}+#1#{C:inactive} Mult)"
+                "扣除赢得资金的一半",
+                "存入钱罐{C:inactive}（计入售价）",
+                "每存入{C:money}$1{}获得{C:red}+#2#{}倍率",
+                "{C:inactive}（当前为{C:red}+#1#{C:inactive}倍率）"
                 -- dollar in it adds to its sold price
             }
         }

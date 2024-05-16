@@ -238,10 +238,10 @@ function SMODS.INIT.BetmmaVouchers()
 
 do
     local oversupply_loc_txt = {
-        name = "Oversupply",
+        name = "供应过量",
         text = {
-            "Gain {C:attention}1{} {C:attention}Voucher Tag{}",
-            "after beating boss blind"
+            "击败Boss盲注后",
+            "获得{C:attention}1{}个{C:attention}奖券标签"
         }
     }
     --function SMODS.Voucher:new(name, slug, config, pos, loc_txt, cost, unlocked, discovered, available, requires, atlas)
@@ -357,11 +357,10 @@ do
     local name="Abstract Art"
     local id="abstract_art"
     local loc_txt = {
-        name = name,
+        name = "抽象艺术",
         text = {
-            "{C:attention}+#1#{} Ante to win,",
-            "{C:blue}+#1#{} hand and",
-            "{C:red}+#1#{} discard per round"
+            "每回合出牌和弃牌次数各{C:blue}+#1#",
+            "赢下游戏需通关底注数{C:attention}+#1#"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -380,10 +379,10 @@ do
     local name="Mondrian"
     local id="mondrian"
     local loc_txt = {
-        name = name,
+        name = "蒙德里安",
         text = {
-            "{C:attention}+#1#{} Ante to win,",
-            "{C:attention}+#1#{} Joker slot"
+            "{C:attention}+#1#{}小丑牌槽位",
+            "赢下游戏需通关底注数{C:attention}+#1#"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -1900,11 +1899,10 @@ do
     local name="Overshopping"
     local id="overshopping"
     local loc_txt = {
-        name = name,
+        name = "究极购物狂",
         text = {
-            "You can shop",
-            "after skipping blinds",
-            "{C:inactive}(Overstock + Oversupply)"
+            "跳过盲注后仍会进入商店",
+            "{C:inactive}（库存过剩 + 供应过量）"
         }
     }
     local this_v = SMODS.Voucher:new(
