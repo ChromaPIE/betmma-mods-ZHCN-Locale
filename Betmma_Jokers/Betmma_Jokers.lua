@@ -41,11 +41,11 @@ function SMODS.INIT.BetmmaJokers()
             }
         },
         errorr = {
-            name = "ERRORR",
+            name = "程错序误",
             text = {
-                "Discarded cards have",
-            "{C:green}#1# in #2#{} chance to",
-            "become random rank"
+                "弃掉的牌的点数",
+                "有{C:green}#1#/#2#{}的几率",
+            "发生随机改变"
             }
         },
         piggy_bank = {
@@ -197,7 +197,7 @@ function SMODS.INIT.BetmmaJokers()
             }
         end
     end
-    G.localization.misc.dictionary.k_errorr = "Rank Changed!"
+    G.localization.misc.dictionary.k_errorr = "-点数出错-"
 
     SMODS.Jokers.j_piggy_bank.calculate = function(self, context)
         if SMODS.end_calculate_context(context) and self.ability.extra.mults > 0 then

@@ -2,7 +2,7 @@
 --- MOD_NAME: Betmma Vouchers
 --- MOD_ID: BetmmaVouchers
 --- MOD_AUTHOR: [Betmma]
---- MOD_DESCRIPTION: 34 More Vouchers and 9 Fusion Vouchers!
+--- MOD_DESCRIPTION: 34 More Vouchers and 10 Fusion Vouchers!
 --- BADGE_COLOUR: ED40BF
 
 ----------------------------------------------
@@ -12,9 +12,10 @@
 -- peek the first card in packs (impractical?) / skipped packs get 50% refund
 -- Global Interpreter Lock: set all jokers to eternal / not eternal, once per round (more like an ability that is used manually)
 -- sold jokers become a tag that replaces the next joker appearing in shop (also an ability)
--- stone cards don't take up hand space (so you can play 5 cards + any stones)
 -- complete a quest to get a soul
 -- fusion vouchers:
+-- Wild Cards can't be debuffed and retrigger themselves
+-- Randomize Lucky Card effects (+Chip, Mult, xMult, money, copy first card played, generate consumable, generate joker (oops all 6 maybe), comsumable slot, joker slot, random tag, enhance jokers, enhance cards, retrigger ...)
 -- Magic Trick + Reroll Surplus: return all cards to deck if deck has no cards
 -- Overstock + Reroll Surplus could make it so that whenever you buy something, it's automatically replaced with a card of the same type
 -- Oversupply Plus and 4D Boosters: Rerolls in the shop also reroll the voucher (if it wasn't purchased).
@@ -70,7 +71,9 @@ local config = {
     v_double_planet=true,
     v_trash_picker=true,
     v_money_target=true,
-    v_art_gallery=true
+    v_art_gallery=true,
+    v_slate=true,
+    v_gilded_glider=true
 }
 
 
@@ -212,7 +215,78 @@ local function pseudorandom_element_weighted(_t, seed)
     return center,center_key
 end
 
+
+--- deal with enhances effect changes when saving & loading
+do
+    local enhanced_prototype_centers = {}
+
+    function setup_consumables()
+        -- Save vanilla enhanced centers
+        enhanced_prototype_centers.m_bonus = G.P_CENTERS.m_bonus.config.bonus
+        enhanced_prototype_centers.m_mult = G.P_CENTERS.m_mult.config.mult
+        enhanced_prototype_centers.m_glass = G.P_CENTERS.m_glass.config.Xmult
+        enhanced_prototype_centers.m_steel = G.P_CENTERS.m_steel.config.h_x_mult
+        enhanced_prototype_centers.m_stone = G.P_CENTERS.m_stone.config.bonus
+        enhanced_prototype_centers.m_gold = G.P_CENTERS.m_gold.config.h_dollars
+    end
+
+
+    -- Restore vanilla enhancements
+    local Game_delete_run_ref = Game.delete_run
+    function Game.delete_run(self)
+
+        G.P_CENTERS.m_bonus.config.bonus = enhanced_prototype_centers.m_bonus
+        G.P_CENTERS.m_mult.config.mult = enhanced_prototype_centers.m_mult
+        G.P_CENTERS.m_glass.config.Xmult = enhanced_prototype_centers.m_glass
+        G.P_CENTERS.m_steel.config.h_x_mult = enhanced_prototype_centers.m_steel
+        G.P_CENTERS.m_stone.config.bonus = enhanced_prototype_centers.m_stone
+        G.P_CENTERS.m_gold.config.h_dollars = enhanced_prototype_centers.m_gold
+
+
+        Game_delete_run_ref(self)
+    end
+
+    -- Restore enhanced cards effect changes
+    local Game_start_run_ref = Game.start_run
+    function Game.start_run(self, args)
+
+        G.P_CENTERS.m_bonus.config.bonus = enhanced_prototype_centers.m_bonus
+        G.P_CENTERS.m_mult.config.mult = enhanced_prototype_centers.m_mult
+        G.P_CENTERS.m_glass.config.Xmult = enhanced_prototype_centers.m_glass
+        G.P_CENTERS.m_steel.config.h_x_mult = enhanced_prototype_centers.m_steel
+        G.P_CENTERS.m_stone.config.bonus = enhanced_prototype_centers.m_stone
+        G.P_CENTERS.m_gold.config.h_dollars = enhanced_prototype_centers.m_gold
+
+        Game_start_run_ref(self, args)
+
+        local saveTable = args.savetext or nil
+        if saveTable then -- without this, vouchers given at the start of the run (in challenge) will be calculated twice
+            if G.GAME.used_vouchers.v_bonus_plus then
+                G.P_CENTERS.m_bonus.config.bonus=G.P_CENTERS.m_bonus.config.bonus+G.P_CENTERS.v_bonus_plus.config.extra
+                for k, v in pairs(G.playing_cards) do
+                    if v.config.center_key == 'm_bonus' then v:set_ability(G.P_CENTERS['m_bonus']) end
+                end
+            end
+            if G.GAME.used_vouchers.v_mult_plus then
+                G.P_CENTERS.m_mult.config.mult=G.P_CENTERS.m_mult.config.mult+G.P_CENTERS.v_mult_plus.config.extra
+                for k, v in pairs(G.playing_cards) do
+                    if v.config.center_key == 'm_mult' then v:set_ability(G.P_CENTERS['m_mult']) end
+                end
+            end
+            if G.GAME.used_vouchers.v_slate then
+                G.P_CENTERS.m_stone.config.bonus=G.P_CENTERS.m_stone.config.bonus+G.P_CENTERS.v_slate.config.extra
+                for k, v in pairs(G.playing_cards) do
+                    if v.config.center_key == 'm_stone' then v:set_ability(G.P_CENTERS['m_stone']) end
+                end
+            end
+        end
+
+    end
+end --
+
 function SMODS.INIT.BetmmaVouchers()
+    setup_consumables()
+
     local get_next_voucher_key_ref=get_next_voucher_key
     function get_next_voucher_key(_from_tag)
         -- local _pool, _pool_key = get_current_pool('Voucher')
@@ -255,10 +329,11 @@ do
     v_oversupply:register()
     
     local oversupply_plus_loc_txt = {
-        name = "Oversupply Plus",
+        name = "货源滚滚",
         text = {
-            "Gain {C:attention}1{} {C:attention}Voucher Tag{}",
-            "after beating every blind"
+            "击败每个盲注后",
+            "获得{C:attention}1{}个{C:attention}奖券标签",
+            "{C:inactive}（不与{C:attention}供应过量{C:inactive}叠加）"
             -- if you have both, after beating boss blind you gain only 1 voucher tag
         }
     }
@@ -309,11 +384,10 @@ do
     local name="Gold Bar"
     local id="gold_bar"
     local gold_bar_loc_txt = {
-        name = name,
+        name = "金条",
         text = {
-            "Gain {C:money}$#1#{} immediately.",
-            "{C:attention}Big Blind{} gives",
-            "no reward money",
+            "立即获得{C:money}$#1#",
+            "{C:attention}大盲注{}将失去奖励金"
         }
     }
     --function SMODS.Voucher:new(name, slug, config, pos, loc_txt, cost, unlocked, discovered, available, requires, atlas)
@@ -701,7 +775,7 @@ do
         end_round_ref()
     end
 
-    G.localization.misc.dictionary.k_target_generate = "标靶！"
+    G.localization.misc.dictionary.k_target_generate = "命中！"
     G.localization.misc.dictionary.k_bulls_eye_generate = "正中十环！"
 
 
@@ -711,9 +785,9 @@ do
     local name="Voucher Bundle"
     local id="voucher_bundle"
     local loc_txt = {
-        name = name,
+        name = "奖券同捆包",
         text = {
-            "Gives {C:Attention}#1#{} random vouchers"
+            "随机给予{C:attention}#1#{}张奖券"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -1287,6 +1361,7 @@ do
                 play_sound('other1')
                 
                 for i = 1, num - #G.shop_booster.cards do
+                    G.GAME.current_round.used_packs = G.GAME.current_round.used_packs or {}
                     G.GAME.current_round.used_packs[i] = get_pack('shop_pack').key 
                     local card = Card(G.shop_booster.T.x + G.shop_booster.T.w/2,
                     G.shop_booster.T.y, G.CARD_W*1.27, G.CARD_H*1.27, G.P_CARDS.empty, G.P_CENTERS[G.GAME.current_round.used_packs[i]], {bypass_discovery_center = true, bypass_discovery_ui = true})
@@ -1830,9 +1905,16 @@ do
         }
         if center_table.name == 'Bonus+' then
             G.P_CENTERS.m_bonus.config.bonus=G.P_CENTERS.m_bonus.config.bonus+G.P_CENTERS.v_bonus_plus.config.extra
+            for k, v in pairs(G.playing_cards) do
+                if v.config.center_key == 'm_bonus' then v:set_ability(G.P_CENTERS['m_bonus']) end
+            end
+        
         end
         if center_table.name == 'Mult+' then
             G.P_CENTERS.m_mult.config.mult=G.P_CENTERS.m_mult.config.mult+G.P_CENTERS.v_mult_plus.config.extra
+            for k, v in pairs(G.playing_cards) do
+                if v.config.center_key == 'm_mult' then v:set_ability(G.P_CENTERS['m_mult']) end
+            end
         end
         Card_apply_to_run_ref(self, center)
     end
@@ -1843,6 +1925,7 @@ end --
 
     -- ################
     -- fusion vouchers!
+do
     G.localization.misc.dictionary["k_fusion_voucher"] = "Fusion Voucher"
     if not G.ARGS.LOC_COLOURS then loc_colour() end
     if not G.ARGS.LOC_COLOURS["fusion"] then G.ARGS.LOC_COLOURS["fusion"] = HEX("F7D762") end
@@ -1861,7 +1944,7 @@ end --
 
         return retval
     end
-
+end
 
 do 
     local name="Gold Round Up"
@@ -2360,6 +2443,145 @@ do
         end_round_ref()
     end
 end --
+do
+    local name="Slate"
+    local id="slate"
+    local loc_txt = {
+        name = name,
+        text = {
+            "Permanently increases {C:attention}Stone Card{}",
+            "bonus by {C:blue}+#1#{} extra chips.",
+            "{C:attention}Stone Cards{} don't occupy", 
+            "space when played",
+            "{C:inactive}(Petroglyph + Bonus+){}"
+        }
+    }
+    local this_v = SMODS.Voucher:new(
+        name, id,
+        {extra=100},
+        {x=0,y=0}, loc_txt,
+        10, true, true, true, {'v_petroglyph','v_bonus_plus'}
+    )
+    SMODS.Sprite:new("v_"..id, SMODS.findModByID("BetmmaVouchers").path, "v_"..id..".png", 71, 95, "asset_atli"):register();
+    this_v:register()
+    this_v.loc_def = function(self)
+        return {self.config.extra}
+    end
+
+    local Card_apply_to_run_ref = Card.apply_to_run
+    function Card:apply_to_run(center)
+        local center_table = {
+            name = center and center.name or self and self.ability.name,
+            extra = center and center.config.extra or self and self.ability.extra
+        }
+        if center_table.name == 'Slate' then
+            G.P_CENTERS.m_stone.config.bonus=G.P_CENTERS.m_stone.config.bonus+G.P_CENTERS.v_slate.config.extra
+            for k, v in pairs(G.playing_cards) do
+                if v.config.center_key == 'm_stone' then v:set_ability(G.P_CENTERS['m_stone']) end
+            end
+        end
+        Card_apply_to_run_ref(self, center)
+    end
+
+    local G_FUNCS_can_play_ref=G.FUNCS.can_play
+    G.FUNCS.can_play = function(e)
+        G_FUNCS_can_play_ref(e)
+        if G.GAME.used_vouchers.v_slate then
+            local stone=0
+            for k, val in ipairs(G.hand.highlighted) do
+                if val.ability.name == 'Stone Card' then stone=stone + 1 end
+            end
+            if not G.GAME.blind.block_play and #G.hand.highlighted >0 and #G.hand.highlighted<=5+stone then
+                e.config.colour = G.C.BLUE
+                e.config.button = 'play_cards_from_highlighted'
+            end
+        end
+    end
+
+    local CardArea_add_to_highlighted_ref=CardArea.add_to_highlighted
+    function CardArea:add_to_highlighted(card, silent)
+        if G.GAME.used_vouchers.v_slate and self.config.type ~='shop' and self.config.type ~='joker' and self.config.type ~='consumeable' then
+            local stone=0
+            for k, val in ipairs(self.highlighted) do
+                if val.ability.name == 'Stone Card' then stone=stone + 1 end
+            end
+            if #self.highlighted < stone+self.config.highlighted_limit or card.ability.name=='Stone Card' then
+                self.highlighted[#self.highlighted+1] = card
+                card:highlight(true)
+                if not silent then play_sound('cardSlide1') end
+                self:parse_highlighted()
+                return
+            end
+        end
+        CardArea_add_to_highlighted_ref(self,card,silent)
+    end
+
+    -- local G_FUNCS_draw_from_deck_to_hand_ref=G.FUNCS.draw_from_deck_to_hand
+    -- G.FUNCS.draw_from_deck_to_hand = function(e) -- failed :(
+        
+    --     G_FUNCS_draw_from_deck_to_hand_ref(e)
+    --     if G.GAME.used_vouchers.v_slate then
+    --         delay(1.51)
+    --         local stone=0
+    --         for k, val in ipairs(G.hand.cards) do
+    --             if val.ability.name == 'Stone Card' then stone=stone + 1 end
+    --         end
+    --         print('fhkkc',#G.hand.cards)
+    --         local deck_cards=#G.deck.cards
+    --         local hand_cards=#G.hand.cards
+    --         while deck_cards>0 and G.hand.config.card_limit+stone - hand_cards>0 do
+    --             draw_card(G.deck,G.hand, 0,'up', true)
+    --             hand_cards=hand_cards+1
+    --             deck_cards=deck_cards-1
+    --         end
+    --     end
+    -- end
+
+end --
+do
+    local name="Gilded Glider"
+    local id="gilded_glider"
+    local loc_txt = {
+        name = "镶金滑翔机",
+        text = {
+            "{C:attention}黄金牌{}给予资金时",
+            "若其右侧的卡牌没有增强",
+            "则将{C:attention}黄金{}增强转移至该卡牌", 
+            "{C:inactive}（金条 + 倍率+）"
+        }
+    }
+    local this_v = SMODS.Voucher:new(
+        name, id,
+        {},
+        {x=0,y=0}, loc_txt,
+        10, true, true, true, {'v_gold_bar','v_bonus_plus'}
+    )
+    SMODS.Sprite:new("v_"..id, SMODS.findModByID("BetmmaVouchers").path, "v_"..id..".png", 71, 95, "asset_atli"):register();
+    this_v:register()
+    this_v.loc_def = function(self)
+        return {}
+    end
+
+    local Card_get_end_of_round_effect_ref=Card.get_end_of_round_effect
+    function Card:get_end_of_round_effect(context)
+        local ret=Card_get_end_of_round_effect_ref(self,context)
+        if G.GAME.used_vouchers.v_gilded_glider and self.config.center_key=='m_gold' then
+            local index=1
+            while G.hand.cards[index]~=self and index<=#G.hand.cards do
+                index=index+1
+            end
+            if index<#G.hand.cards then
+                local right_card=G.hand.cards[index+1]
+                if right_card.config.center_key=='c_base' then
+                    self:set_ability(G.P_CENTERS['c_base'],nil,true)
+                    right_card:set_ability(G.P_CENTERS['m_gold'],nil,true)
+                end
+            end
+        end
+        return ret
+    end
+
+end --
     -- -- this challenge is only for test
     -- table.insert(G.CHALLENGES,1,{
     --     name = "TestVoucher",
@@ -2375,21 +2597,22 @@ end --
     --         --{id = 'j_jjookkeerr'},
     --         -- {id = 'j_ascension'},
     --         {id = 'j_hasty'},
-    --         -- {id = 'j_dna'},
-    --         -- {id = 'j_mime'},
+    --         {id = 'j_reserved_parking'},
+    --         {id = 'j_mime'},
     --         -- {id = 'j_piggy_bank'},
     --         -- {id = 'j_blueprint'},
     --         {id = 'j_triboulet'},
     --     },
     --     consumeables = {
-    --         -- {id = 'c_death'},
+    --         {id = 'c_devil'},
+    --         --{id = 'c_death'},
     --     },
     --     vouchers = {
     --         {id = 'v_trash_picker'},
-    --         {id = 'v_money_target'},
+    --         {id = 'v_slate'},
     --         {id = 'v_bonus_plus'},
-    --         {id = 'v_mult_plus'},
-    --         -- {id = 'v_vanish_magic'},
+    --         {id = 'v_gilded_glider'},
+    --         {id = 'v_paint_brush'},
     --         -- {id = 'v_liquidation'},
     --         -- {id = 'v_3d_boosters'},
     --         -- {id = 'v_b1g1'},
@@ -2400,7 +2623,7 @@ end --
     --     },
     --     deck = {
     --         type = 'Challenge Deck',
-    --         -- cards = {{s='D',r='2',e='m_steel',g='Red'},{s='D',r='3',e='m_steel',g='Red'},{s='D',r='4',e='m_steel',g='Red'},{s='D',r='5',e='m_steel',g='Red'},{s='D',r='6',e='m_steel',g='Red'},{s='D',r='7',e='m_steel',},{s='D',r='8',e='m_steel',},{s='D',r='9',e='m_steel',},{s='D',r='T',e='m_steel',},{s='D',r='J',e='m_steel',},{s='D',r='Q',e='m_steel',},{s='D',r='K',e='m_steel',},{s='D',r='A',e='m_steel',},}
+    --         -- cards = {{s='D',r='2',e='m_stone',g='Red'},{s='D',r='3',e='m_stone',g='Red'},{s='D',r='4',e='m_stone',g='Red'},{s='D',r='5',e='m_steel',g='Red'},{s='D',r='6',e='m_steel',g='Red'},{s='D',r='7',e='m_steel',},{s='D',r='8',e='m_steel',},{s='D',r='9',e='m_steel',},{s='D',r='T',e='m_steel',},{s='D',r='J',e='m_steel',},{s='D',r='Q',e='m_steel',},{s='D',r='K',e='m_steel',},{s='D',r='A',e='m_steel',},{s='D',r='K',e='m_steel',},{s='D',r='A',e='m_steel',},{s='D',r='K',e='m_steel',},{s='D',r='A',e='m_steel',},}
     --     },
     --     restrictions = {
     --         banned_cards = {
@@ -2411,7 +2634,7 @@ end --
     --         }
     --     }
     -- })
-    -- G.localization.misc.challenge_names.c_mod_testvoucher = "TestVoucher"
+    G.localization.misc.challenge_names.c_mod_testvoucher = "TestVoucher"
     init_localization()
 end
 ----------------------------------------------
