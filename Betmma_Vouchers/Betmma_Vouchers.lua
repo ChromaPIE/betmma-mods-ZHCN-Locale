@@ -1416,7 +1416,7 @@ do
     local loc_txt = {
         name = "第二张半价",
         text = {
-            "兑换{C:attention}低级{}奖券时有{C:green}#1#%{}的几率",
+            "兑换{C:attention}奖券{}时有{C:green}#1#%{}的几率",
             "直接获得它的{C:attention}高级{}版本",
             "并支付其价格的一半",
             "{C:inactive}（上述几率无法倍增）"
@@ -1440,7 +1440,7 @@ do
     local loc_txt = {
         name = "买一“赠”一",
         text = {
-            "兑换{C:attention}低级{}奖券时",
+            "兑换{C:attention}奖券{}时",
             "直接获得它的{C:attention}高级{}版本",
             "并支付全款"
         }
@@ -1529,7 +1529,7 @@ do
     local loc_txt = {
         name = "收集者",
         text = {
-            "没兑换一张{C:attention}奖券",
+            "每兑换一张{C:attention}奖券",
             "使盲注的最低得分要求削减{C:attention}#1#%",
             "{C:inactive}（可倍增）"
             -- just because modifying get_blind_amount(ante) is easier than
@@ -1551,13 +1551,12 @@ do
     local name="Connoisseur"
     local id="connoisseur"
     local loc_txt = {
-        name = name,
+        name = "鉴赏家",
         text = {
-            "If you have more than",
-            "{C:money}$#1#/(Vouchers Redeemed + 1){}",
-            "that is {C:money}$#2#{}, redeeming",
-            "a voucher gives {C:dark_edition}Antimatter{}",
-            "and lets the money requirement {C:red}X#3#{}"
+            "若拥有资金多于{C:money}$#1#/(兑换奖券数 + 1)",
+            "{C:inactive}（现为{C:money}$#2#{C:inactive}）",
+            "兑换奖券时将赠送{C:dark_edition}反物质",
+            "并使上述资金需求{C:red}X#3#"
             
         }
     }
@@ -1962,11 +1961,10 @@ do
     local name="Omnicard"
     local id="omnicard"
     local loc_txt = {
-        name = name,
+        name = "全能卡",
         text = {
-            "{C:attention}Wild Cards{} can't be",
-            "debuffed. Retrigger",
-            "all {C:attention}Wild Cards{}"
+            "{C:attention}百搭牌{}永不失效",
+            "且可重新触发"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -1984,14 +1982,13 @@ do
     local name="Bulletproof"
     local id="bulletproof"
     local loc_txt = {
-        name = name,
+        name = "防爆玻璃",
         text = {
             -- "{C:attention}Glass Cards{} can",
             -- "break #1# times"
-            "{C:attention}Glass Cards{} lose {X:mult,C:white}X#1#{}",
-            "instead of breaking.",
-            "They break when",
-            "they reach {X:mult,C:white}X#2#{}"
+            "{C:attention}玻璃牌{}触发破碎时",
+            "只会损失{X:mult,C:white}X#1#{}倍率而非摧毁",
+            "仅在倍率低至{X:mult,C:white}X#2#{}时摧毁"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -2050,7 +2047,7 @@ do
         end
         Card_shatter_ref(self)
     end
-    G.localization.misc.dictionary.k_bulletproof = "Bulletproof!"
+    G.localization.misc.dictionary.k_bulletproof = "防爆！"
     
     function Card_shatter_not_remove(self)
         local dissolve_time = 0.7
