@@ -2873,9 +2873,11 @@ do
     local copy_card_ref=copy_card
     function copy_card(other, new_card, card_scale, playing_card, strip_edition)
         new_card=copy_card_ref(other, new_card, card_scale, playing_card, strip_edition)
-        if G.GAME.used_vouchers[MOD_PREFIX..'v_real_random'] and new_card.config.center.effect=='Lucky Card' then
-            new_card.config.center_key=other.config.center_key
-            --print(new_card.config.center_key)
+        if MOD_PREFIX ~= nil then
+            if G.GAME.used_vouchers[MOD_PREFIX..'v_real_random'] and new_card.config.center.effect=='Lucky Card' then
+                new_card.config.center_key=other.config.center_key
+                --print(new_card.config.center_key)
+            end
         end
         return new_card
     end
