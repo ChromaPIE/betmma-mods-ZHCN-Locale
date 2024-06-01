@@ -1148,7 +1148,7 @@ do
         end
         return G_UIDEF_use_and_sell_buttons_ref(card)
     end
-    G.localization.misc.dictionary.b_reserve = "RESERVE"
+    G.localization.misc.dictionary.b_reserve = "保留"
     G.FUNCS.can_reserve_card = function(e)
         if #G.consumeables.cards < G.consumeables.config.card_limit then 
             e.config.colour = G.C.GREEN
