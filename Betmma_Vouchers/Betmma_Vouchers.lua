@@ -666,7 +666,7 @@ do
             "即刻生成一张{C:spectral}黑洞",
             "使用星球牌时有{C:green}#1#/#2#{}的几率",
             "生成一张{C:spectral}黑洞",
-            "{C:inactive}（必须有空间）"
+            "{C:inactive}（必须有空位）"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -761,7 +761,7 @@ do
             "若回合结束时的得分",
             "为最低要求的{C:attention}#1#%{}或更低",
             "随机生成一张{C:attention}小丑牌",
-            "{C:inactive}（必须有空间）"
+            "{C:inactive}（必须有空位）"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -785,7 +785,7 @@ do
             "若回合结束时的得分",
             "为最低要求的{C:attention}#1#%{}或更低",
             "随机生成一张{C:dark_edition}负片{C:attention}小丑牌",
-            "{C:inactive}（必须有空间）"
+            "{C:inactive}（必须有空位）"
         }
     }
     local this_v = SMODS.Voucher:new(
@@ -1801,7 +1801,7 @@ do
         text = {
             "盲注开局时",
             "生成一张{C:attention}永恒{C:tarot}塔罗牌",
-            "{C:inactive}（必须有空间）",
+            "{C:inactive}（必须有空位）",
             "该牌会在本奖券",
             "生成新牌前消失"
         }
@@ -1826,7 +1826,7 @@ do
             "消耗牌槽位{C:attention}+1",
             "盲注结束时",
             "生成一张{C:attention}永恒{C:spectral}幻灵牌",
-            "{C:inactive}（必须有空间）",
+            "{C:inactive}（必须有空位）",
             "该牌会在本奖券",
             "生成新牌前消失"
         }
