@@ -146,7 +146,7 @@ function SMODS.current_mod.process_loc_text()
     G.localization.misc.dictionary.k_big_blast_edition = "炸飞！"
     G.localization.misc.dictionary.b_flip_hand = "翻面"
     G.localization.misc.dictionary.k_bulletproof = "防爆！"
-    G.localization.misc.dictionary.b_vanish = "VANISH"
+    G.localization.misc.dictionary.b_vanish = "消散"
     for k,v in pairs(real_random_data) do
         G.localization.descriptions.Enhanced['real_random_'..k] =v 
     end
@@ -2418,12 +2418,12 @@ do
     local name="Reroll Cut"
     local id="reroll_cut"
     local loc_txt = {
-        name = name,
+        name = "重掷剪辑版",
         text = {
-            "Rerolling boss blind",
-            "also rerolls tags, and",
-            "gives a random tag",
-            "{C:inactive}(Director's Cut + Reroll Surplus)"
+            "重掷Boss盲注时",
+            "跳关奖励标签也会刷新",
+            "并随机赠送一个标签",
+            "{C:inactive}（导演剪辑版 + 大量重掷）"
         }
     }
     local this_v = SMODS.Voucher{
@@ -2487,12 +2487,11 @@ do
     local name="Vanish Magic"
     local id="vanish_magic"
     local loc_txt = {
-        name = name,
+        name = "消失术",
         text = {
-            "You can make playing cards",
-            "in the shop vanish and",
-            "earn {C:money}$#1#{} for each",
-            "{C:inactive}(Magic Trick + Blank)"
+            "你可以消除商店中的扑克牌",
+            "每消除一张，获得{C:money}$#1#",
+            "{C:inactive}（戏法 + 空白）"
         }
     }
     local this_v = SMODS.Voucher{
@@ -2822,13 +2821,12 @@ do
     local name="B1Ginf"
     local id="b1ginf"
     local loc_txt = {
-        name = name,
+        name = "无限量批发",
         text = {
-            "When you redeem a",
-            "{C:attention}Voucher{}, always redeem",
-            "all {C:attention}higher tier{} Vouchers",
-            "and pay their prices",
-            "{C:inactive}(Collector + B1G1){}"
+            "兑换{C:attention}奖券{}时",
+            "直接获得它所有的{C:attention}高级{}版本",
+            "并支付全款",
+            "{C:inactive}（收集者 + 买一“赠”一）"
         }
     }
     local this_v = SMODS.Voucher{
@@ -2847,13 +2845,11 @@ do
     local name="Slate"
     local id="slate"
     local loc_txt = {
-        name = name,
+        name = "神秘石板",
         text = {
-            "Permanently increases {C:attention}Stone Card{}",
-            "bonus by {C:blue}+#1#{} extra chips.",
-            "{C:attention}Stone Cards{} don't occupy", 
-            "space when played",
-            "{C:inactive}(Petroglyph + Bonus+){}"
+            "{C:attention}石头牌{}不计入出牌张数上限",
+            "且筹码加成永久{C:blue}+#1#", 
+            "{C:inactive}（远古岩画 + 奖励+）"
         }
     }
     local this_v = SMODS.Voucher{
@@ -2986,12 +2982,11 @@ do
     local name="Mirror"
     local id="mirror"
     local loc_txt = {
-        name = name,
+        name = "镜面反射",
         text = {
-            "When a {C:attention}Steel Card{} scores,",
-            "the card to its right",
-            "triggers one more time", 
-            "{C:inactive}(Flipped Card + Omnicard){}"
+            "{C:attention}钢铁牌{}计分时",
+            "重新触发其右侧的卡牌",
+            "{C:inactive}（暗斗明争 + 全能牌）"
         }
     }
     local this_v = SMODS.Voucher{
@@ -3162,8 +3157,8 @@ do
                 return 25*math.ceil(chance^1.2)
             end,
             text={
-                "{C:green}#1# in #3#{} chance",
-                "for {C:chips}+#2#{} Chips"
+                "{C:green}#1#/#3#{}的几率",
+                "{C:chips}+#2#{}筹码"
             }
         },
         mult={
@@ -3172,8 +3167,8 @@ do
                 return 4*math.ceil(chance^1.2)
             end,
             text={
-                "{C:green}#1# in #3#{} chance",
-                "for {C:mult}+#2#{} Mult"
+                "{C:green}#1#/#3#{}的几率",
+                "{C:mult}+#2#{}倍率"
             }
         },
         x_mult={
@@ -3182,8 +3177,8 @@ do
                 return math.ceil(chance^1.2)/10+1
             end,
             text={
-                "{C:green}#1# in #3#{} chance",
-                "for {X:red,C:white}X#2#{} Mult"
+                "{C:green}#1#/#3#{}的几率",
+                "{X:red,C:white}X#2#{}倍率"
             }
         },
         dollars={
@@ -3192,8 +3187,8 @@ do
                 return math.ceil(chance^1.2)
             end,
             text={
-                "{C:green}#1# in #3#{} chance",
-                "to win {C:money}$#2#"
+                "{C:green}#1#/#3#{}的几率",
+                "赢得{C:money}$#2#"
             }
         },
         joker_slot={
@@ -3203,8 +3198,8 @@ do
                 return 1
             end,
             text={
-                "{C:green}#1# in #3#{} chance",
-                "for {C:attention}+#2#{} Joker slot"
+                "{C:green}#1#/#3#{}的几率",
+                "{C:attention}+#2#{}小丑牌槽位"
             }
         },
         consumable_slot={
@@ -3214,8 +3209,8 @@ do
                 return 1
             end,
             text={
-                "{C:green}#1# in #3#{} chance",
-                "for {C:attention}+#2#{} Consumable slot"
+                "{C:green}#1#/#3#{}的几率",
+                "{C:attention}+#2#{}消耗牌槽位"
             }
         },
         random_voucher={
@@ -3225,8 +3220,8 @@ do
                 return 1
             end,
             text={
-                "{C:green}#1# in #3#{} chance",
-                "for a random {C:attention}Voucher{}"
+                "{C:green}#1#/#3#{}的几率",
+                "随机获得一张{C:attention}奖券"
             }
         },
         random_negative_joker={
@@ -3236,8 +3231,8 @@ do
                 return 1
             end,
             text={
-                "{C:green}#1# in #3#{} chance",
-                "for a random {C:dark_edition}negative{} {C:attention}Joker{}"
+                "{C:green}#1#/#3#{}的几率",
+                "随机获得一张{C:dark_edition}负片{C:attention}小丑牌"
             }
         },
         new_ability={
@@ -3249,8 +3244,8 @@ do
                 return 1
             end,
             text={
-                "{C:green}#1# in #3#{} chance",
-                "for a new ability"
+                "{C:green}#1#/#3#{}的几率",
+                "获得一项新能力"
             }
         },
         double_probability={
@@ -3262,8 +3257,8 @@ do
                 return 1
             end,
             text={
-                "{C:green}#1# in #3#{} chance",
-                "to double all probabilities"
+                "{C:green}#1#/#3#{}的几率",
+                "使所有几率翻倍"
             }
         },
         random_tag={
@@ -3273,8 +3268,8 @@ do
                 return 1
             end,
             text={
-                "{C:green}#1# in #3#{} chance",
-                "for a random {C:attention}tag{}"
+                "{C:green}#1#/#3#{}的几率",
+                "随机获得一个{C:attention}标签"
             }
         },
         retrigger_next={
@@ -3284,9 +3279,9 @@ do
                 return math.max(math.ceil(math.log(chance))-1,1)
             end,
             text={
-                "{C:green}#1# in #3#{} chance",
-                "to retrigger the card",
-                "to its right {C:attention}#2#{} times"
+                "{C:green}#1#/#3#{}的几率",
+                "重新触发",
+                "其右侧的牌{C:attention}#2#{}次"
             }
         },
         hand_size={
@@ -3298,8 +3293,8 @@ do
                 return 1
             end,
             text={
-                "{C:green}#1# in #3#{} chance",
-                "to {C:attention}+#2#{} hand size"
+                "{C:green}#1#/#3#{}的几率",
+                "{C:attention}+#2#{}手牌上限"
             }
         },
         transfer_ability={
@@ -3309,10 +3304,9 @@ do
                 return 1
             end,
             text={
-                "{C:green}#1# in #3#{} chance",
-                "to {C:attention}transfer{} a random",
-                "{C:attention}ability{} of this card",
-                "to the card to its right"
+                "{C:green}#1#/#3#{}的几率",
+                "随机{C:attention}转移{}本牌的一项{C:attention}能力",
+                "至其右侧的卡牌"
             }
         }
     }
@@ -3657,13 +3651,11 @@ do
     local name="Recycle Area"
     local id="recycle_area"
     local loc_txt = {
-        name = name,
+        name = "喜新厌旧",
         text = {
-            "You can {C:red}discard",
-            "your hand once when",
-            "opening a {C:tarot}Tarot Pack{}",
-            "or {C:spectral}Spectral Pack{}",
-            "{C:inactive}(Reserve Area + Wasteful){}"
+            "打开{C:tarot}秘术包{}或{C:spectral}幻灵包{}时",
+            "你可以{C:red}弃掉{}并重抽一手扑克牌",
+            "{C:inactive}（打包带走 + 常弃常新）"
         }
     }
     local this_v = SMODS.Voucher{
