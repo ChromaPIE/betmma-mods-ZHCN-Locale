@@ -2,9 +2,9 @@
 --- MOD_NAME: Betmma Vouchers
 --- MOD_ID: BetmmaVouchers
 --- MOD_AUTHOR: [Betmma]
---- MOD_DESCRIPTION: 38 More Vouchers and 16 Fusion Vouchers! v2.0.0
+--- MOD_DESCRIPTION: 38 More Vouchers and 16 Fusion Vouchers! v2.0.0-beta1
 --- PREFIX: betm_vouchers
---- VERSION: 2.0.0(20240603)
+--- VERSION: 2.0.0-beta1(20240604)
 --- BADGE_COLOUR: ED40BF
 
 ----------------------------------------------
@@ -40,8 +40,8 @@
 -- (upgraded of above) if probabilities in lucky card, that is written as A in B, satisfies A>B, this can trigger more than 1 time
 -- Magic Trick + Reroll Surplus: return all cards to deck if deck has no cards
 -- Overstock + Reroll Surplus could make it so that whenever you buy something, it's automatically replaced with a card of the same type
--- you can discard the hand when opening a pack once
--- random voucher pack $8
+-- enhancements can stack
+-- tier 2 voucher pack $15
 -- give $1 per 10 cards left when round ends
 -- Grand Finale: if no cards left when round ends, gives $10
 --[[
