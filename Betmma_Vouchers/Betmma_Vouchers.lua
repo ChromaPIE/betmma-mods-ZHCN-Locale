@@ -2986,7 +2986,7 @@ do
         text = {
             "{C:attention}钢铁牌{}计分时",
             "重新触发其右侧的卡牌",
-            "{C:inactive}（暗斗明争 + 全能牌）"
+            "{C:inactive}（暗斗明争 + 全能卡）"
         }
     }
     local this_v = SMODS.Voucher{
