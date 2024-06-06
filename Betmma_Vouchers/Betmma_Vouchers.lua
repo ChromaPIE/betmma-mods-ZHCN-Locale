@@ -3788,8 +3788,8 @@ do
     local loc_txt = {
         name = name,
         text = {
-            "{C:attention}Enhancements{} and",
-            "{C:attention}Editions{} can stack",
+            "Same kind of",
+            "{C:attention}Enhancements{} can stack",
             "{C:inactive}(Collector + Abstract Art){}"
         }
     }
@@ -3858,7 +3858,7 @@ end -- chaos
     --         {id = 'j_oops'},
     --         {id = 'j_oops'},
     --         {id = 'j_hiker'},
-    --         -- {id = 'betm_jokers_j_housing_choice'},
+    --         {id = 'betm_jokers_j_jjookkeerr'},
     --         -- {id = 'j_oops'},
     --         -- {id = 'j_oops'},
     --         -- {id = 'j_oops'},
@@ -3872,12 +3872,6 @@ end -- chaos
     --     },
     --     consumeables = {
     --         {id = 'c_cryptid'},
-    --         {id = 'c_justice'},
-    --         {id = 'c_justice'},
-    --         {id = 'c_heirophant'},
-    --         {id = 'c_heirophant'},
-    --         {id = 'c_chariot'},
-    --         {id = 'c_chariot'},
     --         --{id = 'c_devil_cu'},
     --         --{id = 'c_death'},
     --     },
