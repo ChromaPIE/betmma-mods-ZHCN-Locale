@@ -2305,11 +2305,11 @@ do
     local name="Cash Clutch"
     local id="cash_clutch"
     local loc_txt = {
-        name = name,
+        name = "稳攥不赔",
         text = {
-            "At end of each Round,",
-            "earn extra {C:money}$#1#{}",
-            "per remaining {C:blue}Hand",
+            "回合结束时",
+            "每个剩余的{C:blue}出牌次数",
+            "多折现{C:money}$#1#"
         }
     }
     local this_v = SMODS.Voucher{
@@ -2327,11 +2327,11 @@ do
     local name="Inflation"
     local id="inflation"
     local loc_txt = {
-        name = name,
+        name = "通货膨胀",
         text = {
-            "At end of each Round,",
-            "earn extra {C:money}$#1#{}",
-            "per remaining {C:blue}Hand",
+            "回合结束时",
+            "每个剩余的{C:blue}出牌次数",
+            "再多折现{C:money}$#1#"
         }
     }
     local this_v = SMODS.Voucher{
@@ -2691,12 +2691,12 @@ do
     local name="Double Planet"
     local id="double_planet"
     local loc_txt = {
-        name = name,
+        name = "双行星系统",
         text = {
-            "Create a random {C:planet}Planet{} card",
-            "when buying a Planet card",
-            "{C:inactive}(Must have room)",
-            "{C:inactive}(Planet Merchant + B1G50%)"
+            "购买{C:planet}星球牌{}时",
+            "随机生成一张星球牌",
+            "{C:inactive}（必须有空间）",
+            "{C:inactive}（星球牌商人 + 第二张半价）"
         }
     }
     local this_v = SMODS.Voucher{
@@ -2724,13 +2724,14 @@ do
     local name="Trash Picker"
     local id="trash_picker"
     local loc_txt = {
-        name = name,
+        name = "垃圾夹",
         text = {
-            "{C:blue}+#1#{} hand and {C:red}+#1#{} discard per round.",
-            "You can spend 1 hand to discard if",
-            "no discards left. {C:red}Discards{} {C:money}earn{}",
-            "as much as {C:blue}Hands{} after rounds",
-            "{C:inactive}(Grabber + Wasteful)"
+            "每回合{C:blue}出牌{}和{C:red}弃牌{}次数各{C:attention}+#1#",
+            "弃牌次数耗尽时",
+            "仍可消耗出牌次数继续弃牌",
+            "回合结束时，剩余{C:red}弃牌{}次数",
+            "的{C:money}折现价{}与{C:blue}出牌{}次数相等",
+            "{C:inactive}（抓手 + 常弃常新）"
         }
     }
     local this_v = SMODS.Voucher{
@@ -2780,12 +2781,11 @@ do
     local name="Money Target"
     local id="money_target"
     local loc_txt = {
-        name = name,
+        name = "百發百中",
         text = {
-            "Earn double {C:money}interest{}", 
-            "at end of round if your",
-            "money is multiples of 5",
-            "{C:inactive}(Seed Money + Target){}"
+            "若资金为5的倍数",
+            "则回合结束时{C:money}奖励{}翻倍",
+            "{C:inactive}（种子基金 + 射箭标靶）"
         }
     }
     local this_v = SMODS.Voucher{
