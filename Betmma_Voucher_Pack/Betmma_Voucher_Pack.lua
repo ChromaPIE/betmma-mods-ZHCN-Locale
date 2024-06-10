@@ -131,7 +131,7 @@ IN_SMOD1=MODDED_VERSION>='1.0.0'
     
         addBooster(
             "p_voucher_pack",   --id
-            "Voucher Pack",              --name
+            "奖券包",              --name
             -- pack_contents,              --pack contents
             nil,                        --order
             true,                       --discovered
@@ -140,7 +140,7 @@ IN_SMOD1=MODDED_VERSION>='1.0.0'
             12,                         --cost
             {x=0,y=0},                  --pos
             {extra = 3, choose = 1},    --config
-            {"Choose {C:attention}#1#{} of up to","{C:attention}#2#{} Vouchers", "to be redeemed"}, --desc
+            {"从{C:attention}#2#{}张奖券中","选择{C:attention}#1#{}张兑换"}, --desc
             true,                       --alerted
             "assets",                   --sprite path
             "p_voucher_pack.png",          --sprite name
@@ -151,7 +151,7 @@ IN_SMOD1=MODDED_VERSION>='1.0.0'
 
         addBooster(
             "p_uncommon_voucher_pack",   --id
-            "Uncommon Voucher Pack",              --name
+            "罕见奖券包",              --name
             -- pack_contents,              --pack contents
             nil,                        --order
             true,                       --discovered
@@ -160,7 +160,7 @@ IN_SMOD1=MODDED_VERSION>='1.0.0'
             12,                         --cost
             {x=0,y=0},                  --pos
             {extra = 3, choose = 1},    --config
-            {"Choose {C:attention}#1#{} of up to","{C:attention}#2#{} Uncommon Vouchers", "to be redeemed"}, --desc
+            {"从{C:attention}#2#{}张罕见奖券中","选择{C:attention}#1#{}张兑换"}, --desc
             true,                       --alerted
             "assets",                   --sprite path
             "p_uncommon_voucher_pack.png",          --sprite name
@@ -170,7 +170,7 @@ IN_SMOD1=MODDED_VERSION>='1.0.0'
         )
         addBooster(
             "p_fusion_voucher_pack",   --id
-            "Fusion Voucher Pack",              --name
+            "融合奖券包",              --name
             -- pack_contents,              --pack contents
             nil,                        --order
             true,                       --discovered
@@ -179,7 +179,7 @@ IN_SMOD1=MODDED_VERSION>='1.0.0'
             18,                         --cost
             {x=0,y=0},                  --pos
             {extra = 3, choose = 1},    --config
-            {"Choose {C:attention}#1#{} of up to","{C:attention}#2#{} Fusion Vouchers", "to be redeemed"}, --desc
+            {"从{C:attention}#2#{}张融合奖券中","选择{C:attention}#1#{}张兑换"}, --desc
             true,                       --alerted
             "assets",                   --sprite path
             "p_fusion_voucher_pack.png",          --sprite name
