@@ -89,7 +89,12 @@ IN_SMOD1=MODDED_VERSION>='1.0.0'
         G.P_CENTERS[id] = newBooster
 
         --add name + description to the localization object
-        local newBoosterText = {name=name, text=desc, text_parsed={}, name_parsed={}}
+        local dispname = {
+            ['Voucher Pack'] = "奖券包",
+            ['Uncommon Voucher Pack'] = "罕见奖券包",
+            ['Fusion Voucher Pack'] = "融合奖券包",
+        }
+        local newBoosterText = {name=dispname[name], text=desc, text_parsed={}, name_parsed={}}
         for _, line in ipairs(desc) do
             newBoosterText.text_parsed[#newBoosterText.text_parsed+1] = loc_parse_string(line)
         end
@@ -131,7 +136,7 @@ IN_SMOD1=MODDED_VERSION>='1.0.0'
     
         addBooster(
             "p_voucher_pack",   --id
-            "奖券包",              --name
+            "Voucher Pack",              --name
             -- pack_contents,              --pack contents
             nil,                        --order
             true,                       --discovered
@@ -151,7 +156,7 @@ IN_SMOD1=MODDED_VERSION>='1.0.0'
 
         addBooster(
             "p_uncommon_voucher_pack",   --id
-            "罕见奖券包",              --name
+            "Uncommon Voucher Pack",              --name
             -- pack_contents,              --pack contents
             nil,                        --order
             true,                       --discovered
@@ -170,7 +175,7 @@ IN_SMOD1=MODDED_VERSION>='1.0.0'
         )
         addBooster(
             "p_fusion_voucher_pack",   --id
-            "融合奖券包",              --name
+            "Fusion Voucher Pack",              --name
             -- pack_contents,              --pack contents
             nil,                        --order
             true,                       --discovered
