@@ -41,7 +41,9 @@ function SMODS.current_mod.process_loc_text()
 end
 
 -- you can disable joker here
-jokerBlacklists={}
+jokerBlacklists={
+    "housing_choice"
+}
 
 
     
@@ -93,12 +95,11 @@ jokerBlacklists={}
             }
         },
         housing_choice = {
-            name = "Housing Choice",
+            name = "葫芦入户",
             text = {
-                "Get a random {C:attention}Voucher{}",
-                "if played hand contains",
-                "a {C:attention}Full House{}. This can",
-                "only trigger 1 time per ante",
+                "若打出的牌中包含{C:attention}葫芦",
+                "随机获取一张{C:attention}奖券",
+                "（每个底注限一次）",
                 "{C:inactive}(#1#)"
                 -- dollar in it adds to its sold price
             }
@@ -193,7 +194,7 @@ local function INIT()
             blueprint_compat=false, 
             eternal_compat=false,
             loc_vars=function(self,info_queue,center)
-                return {vars={center.ability.extra.triggered and "inactive" or "active"}}
+                return {vars={center.ability.extra.triggered and "不可用" or "可用"}}
             end,
             calculate=function(self,card,context)
                 if context.cardarea==G.jokers and context.before and not context.blueprint and next(context.poker_hands["Full House"]) and not card.ability.extra.triggered then

@@ -8,6 +8,7 @@
 
 ----------------------------------------------
 ------------MOD CODE -------------------------
+G.localization.misc.dictionary['k_voucher_pack'] = "奖券包"
 IN_SMOD1=MODDED_VERSION>='1.0.0'
 
     local MOD_PREFIX="betmma_voucher_pack_"
@@ -23,7 +24,7 @@ IN_SMOD1=MODDED_VERSION>='1.0.0'
         for k,v in pairs(dict_loc_table) do
             G.localization.misc.dictionary['k_'..k]=v
         end
-        G.localization.misc.dictionary.k_voucher_pack = "Voucher Pack"
+        G.localization.misc.dictionary.k_voucher_pack = "奖券包"
         -- G.localization.descriptions.Booster=G.localization.descriptions.Booster or {}
         -- G.localization.descriptions.Booster['p_voucher_pack'] = {
         --     name='Voucher Pack???',
@@ -102,7 +103,7 @@ IN_SMOD1=MODDED_VERSION>='1.0.0'
             newBoosterText.name_parsed[#newBoosterText.name_parsed+1] = loc_parse_string(line)
         end
         loc_table[id]=newBoosterText
-        dict_loc_table[id]=name
+        dict_loc_table[id]=dispname[name]
         G.localization.descriptions.Other[id] = newBoosterText
         -- G.localization.descriptions.Booster=G.localization.descriptions.Booster or {}
         -- G.localization.descriptions.Booster[id] = {
@@ -320,7 +321,7 @@ IN_SMOD1=MODDED_VERSION>='1.0.0'
                     {n=G.UIT.C, config={align = "cm", padding = 0.05, minw = 4}, nodes={
                       {n=G.UIT.R,config={align = "bm", padding = 0.05}, nodes={
                         -- only this part is modified
-                        {n=G.UIT.O, config={object = DynaText({string = localize('k_'..G.GAME.BetmmaVoucherPackKey), colours = {G.C.WHITE},shadow = true, rotate = true, bump = true, spacing =2, scale = 0.7, maxw = 4, pop_in = 0.5})}}
+                        {n=G.UIT.O, config={object = DynaText({string = localize('k_voucher_pack'), colours = {G.C.WHITE},shadow = true, rotate = true, bump = true, spacing =2, scale = 0.7, maxw = 4, pop_in = 0.5})}}
                         --
                       }},
                       {n=G.UIT.R,config={align = "bm", padding = 0.05}, nodes={
