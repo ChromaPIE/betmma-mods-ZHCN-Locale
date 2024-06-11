@@ -141,7 +141,7 @@ IN_SMOD1=MODDED_VERSION>='1.0.0'
             -- pack_contents,              --pack contents
             nil,                        --order
             true,                       --discovered
-            11.4,                          --weight
+            1.4,                          --weight
             "Standard",                 --kind
             12,                         --cost
             {x=0,y=0},                  --pos
@@ -161,7 +161,7 @@ IN_SMOD1=MODDED_VERSION>='1.0.0'
             -- pack_contents,              --pack contents
             nil,                        --order
             true,                       --discovered
-            10.6,                          --weight
+            0.6,                          --weight
             "Standard",                 --kind
             12,                         --cost
             {x=0,y=0},                  --pos
@@ -180,7 +180,7 @@ IN_SMOD1=MODDED_VERSION>='1.0.0'
             -- pack_contents,              --pack contents
             nil,                        --order
             true,                       --discovered
-            10.3,                          --weight
+            0.3,                          --weight
             "Standard",                 --kind
             18,                         --cost
             {x=0,y=0},                  --pos
