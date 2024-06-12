@@ -8,7 +8,6 @@
 
 ----------------------------------------------
 ------------MOD CODE -------------------------
-G.localization.misc.dictionary['k_voucher_pack'] = "奖券包"
 IN_SMOD1=MODDED_VERSION>='1.0.0'
 
     local MOD_PREFIX="betmma_voucher_pack_"
@@ -105,6 +104,7 @@ IN_SMOD1=MODDED_VERSION>='1.0.0'
         loc_table[id]=newBoosterText
         dict_loc_table[id]=dispname[name]
         G.localization.descriptions.Other[id] = newBoosterText
+        G.localization.misc.dictionary['k_'..id]=dispname[name]
         -- G.localization.descriptions.Booster=G.localization.descriptions.Booster or {}
         -- G.localization.descriptions.Booster[id] = {
         --     name=name,
@@ -198,10 +198,10 @@ IN_SMOD1=MODDED_VERSION>='1.0.0'
     local ease_background_colour_blind_ref=ease_background_colour_blind
     function ease_background_colour_blind(state, blind_override)
         if G.InBetmmaVoucherPack then
-            print(G.GAME.BetmmaVoucherPackKey)
-            print(#G.C.VOUCHER_PACK_COLORS[G.GAME.BetmmaVoucherPackKey])
-            print(G.C.VOUCHER_PACK_COLORS[G.GAME.BetmmaVoucherPackKey].color)
-            print(G.C.VOUCHER_PACK_COLORS[G.GAME.BetmmaVoucherPackKey].background_color)
+            -- print(G.GAME.BetmmaVoucherPackKey)
+            -- print(#G.C.VOUCHER_PACK_COLORS[G.GAME.BetmmaVoucherPackKey])
+            -- print(G.C.VOUCHER_PACK_COLORS[G.GAME.BetmmaVoucherPackKey].color)
+            -- print(G.C.VOUCHER_PACK_COLORS[G.GAME.BetmmaVoucherPackKey].background_color)
             ease_colour(G.C.DYN_UI.MAIN, G.C.VOUCHER_PACK_COLORS[G.GAME.BetmmaVoucherPackKey].color)
             ease_background_colour{new_colour = G.C.VOUCHER_PACK_COLORS[G.GAME.BetmmaVoucherPackKey].background_color, contrast = 3}
             return
@@ -321,7 +321,7 @@ IN_SMOD1=MODDED_VERSION>='1.0.0'
                     {n=G.UIT.C, config={align = "cm", padding = 0.05, minw = 4}, nodes={
                       {n=G.UIT.R,config={align = "bm", padding = 0.05}, nodes={
                         -- only this part is modified
-                        {n=G.UIT.O, config={object = DynaText({string = localize('k_voucher_pack'), colours = {G.C.WHITE},shadow = true, rotate = true, bump = true, spacing =2, scale = 0.7, maxw = 4, pop_in = 0.5})}}
+                        {n=G.UIT.O, config={object = DynaText({string = localize('k_'..G.GAME.BetmmaVoucherPackKey), colours = {G.C.WHITE},shadow = true, rotate = true, bump = true, spacing =2, scale = 0.7, maxw = 4, pop_in = 0.5})}}
                         --
                       }},
                       {n=G.UIT.R,config={align = "bm", padding = 0.05}, nodes={
