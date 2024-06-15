@@ -2451,13 +2451,13 @@ do
     local name="Eternity"
     local id="eternity"
     local loc_txt = {
-        name = name,
+        name = "亘古永恒",
         text = {
-            "Shop can have {C:attention}Eternal{} Jokers.",
-            "{C:inactive,s:0.8}(Can't be sold or destroyed)",
-            "{C:attention}Eternal{} Jokers have {C:green}#1#%{}",
-            "chance to be {C:dark_edition}Negative{}",
-            "{C:inactive}(This chance can't be doubled){}"
+            "商店中可能出现{C:attention}永恒{}小丑",
+            "{C:inactive,s:0.8}（不可售出，无法摧毁）",
+            "{C:attention}永恒{}小丑有{C:green}#1#%{}的几率",
+            "同时拥有{C:dark_edition}负片",
+            "{C:inactive}（上述几率无法倍增）"
         }
     }
     local this_v = SMODS.Voucher{
@@ -2475,12 +2475,11 @@ do
     local name="Half-life"
     local id="half_life"
     local loc_txt = {
-        name = name,
+        name = "半衰期",
         text = {
-            "Shop can have {C:attention}Perishable{} Jokers.",
-            "{C:inactive,s:0.8}(Debuffed after 5 Rounds)",
-            "{C:attention}Perishable{} Jokers only",
-            "take up {C:attention}#1#{} Joker slots",
+            "商店中会出现{C:attention}易腐{}小丑",
+            "{C:inactive,s:0.8}（5回合后失效）",
+            "{C:attention}易腐{}小丑牌仅占{C:attention}#1#{}个槽位"
         }
     }
     local this_v = SMODS.Voucher{
