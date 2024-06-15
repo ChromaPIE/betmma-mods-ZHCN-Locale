@@ -41,9 +41,7 @@ function SMODS.current_mod.process_loc_text()
 end
 
 -- you can disable joker here
-jokerBlacklists={
-    "housing_choice"
-}
+jokerBlacklists={}
 
 
     
