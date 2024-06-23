@@ -2589,13 +2589,12 @@ do
     local name="Debt Burden"
     local id="debt_burden"
     local loc_txt = {
-        name = name,
+        name = "债多压身",
         text = {
-            "Shop can have {C:attention}Rental{} Jokers.",
-            "{C:inactive,s:0.8}(Costs {C:money,s:0.8}$3{C:inactive,s:0.8} per round only if you",
-            "{C:attention,s:0.8}aren't in debt before round ends{C:inactive,s:0.8})",
-            "Each {C:attention}Rental{} Joker increases",
-            "debt limit by {C:red}-$#1#{}"
+            "商店中可能出现{C:attention}出租{}小丑牌",
+            "{C:attention,s:0.8}（回合结束时{C:inactive,s:0.8}若{C:attention,s:0.8}未负债{C:inactive,s:0.8}，扣减{C:money,s:0.8}$3{C:inactive,s:0.8}）",
+            "每张{C:attention}出租{}小丑牌",
+            "可使负债上限提升{C:red}$#1#"
         }
     }
     local this_v = SMODS.Voucher{
@@ -2613,13 +2612,13 @@ do
     local name="Bobby Pin"
     local id="bobby_pin"
     local loc_txt = {
-        name = name,
+        name = "铁丝发夹",
         text = {
-            "Shop can have {C:attention}Pinned{} Jokers.",
-            "{C:inactive,s:0.8}(Stays pinned to the leftmost position)",
-            "Each {C:attention}Pinned{} Joker copies",
-            "ability of {C:attention}Joker{} to the right",
-            "if itself {C:attention}isn't triggered{}"
+            "商店中可能出现{C:attention}左极固定{}小丑牌",
+            "{C:inactive,s:0.8}（强制固定于最左侧，不可移动）",
+            "每张{C:attention}左极固定{}小丑牌",
+            "在{C:attention}自身触发前{}拥有",
+            "其{C:attention}右侧{}小丑牌的能力"
         }
     }
     local this_v = SMODS.Voucher{
@@ -3281,7 +3280,7 @@ do
     local name="Art Gallery"
     local id="art_gallery"
     local loc_txt = {
-        name = name,
+        name = "艺作画廊",
         text = {
             "{C:attention}+#1#{} Ante to win.",
             "When {C:attention}Boss Blind{} is defeated,", 
@@ -4515,11 +4514,10 @@ do
     local name="Chaos"
     local id="chaos"
     local loc_txt = {
-        name = name,
+        name = "杂七杂八",
         text = {
-            "Same kind of",
-            "{C:attention}Enhancements{} can stack",
-            "{C:inactive}(Collector + Abstract Art){}"
+            "同种{C:attention}增强{}可堆叠",
+            "{C:inactive}（收集者 + 抽象艺术）"
         }
     }
     local this_v = SMODS.Voucher{
@@ -4571,12 +4569,13 @@ do
     local name="Heat Death"
     local id="heat_death"
     local loc_txt = {
-        name = name,
+        name = "热寂",
         text = {
-            "{C:attention}Eternal{} and {C:attention}Perishable{} can stack.",
-            "Such Joker gives {C:dark_edition}+#1#{} Joker slot",
-            "when {C:attention}debuffed{} by Perishable",
-            "{C:inactive}(Eternity + Half-life){}"
+            "{C:attention}永恒{}和{C:attention}易腐{}可共存",
+            "同时拥有两者的小丑牌",
+            "因易腐而{C:attention}失效{}时",
+            "将提供{C:dark_edition}#1#{}个小丑牌槽位",
+            "{C:inactive}（亘古永恒 + 半衰期）"
         }
     }
     local this_v = SMODS.Voucher{
