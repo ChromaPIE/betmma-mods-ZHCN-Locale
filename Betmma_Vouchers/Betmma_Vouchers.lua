@@ -2,9 +2,9 @@
 --- MOD_NAME: Betmma Vouchers
 --- MOD_ID: BetmmaVouchers
 --- MOD_AUTHOR: [Betmma]
---- MOD_DESCRIPTION: 46 Vouchers and 19 Fusion Vouchers! v2.1.4.1
+--- MOD_DESCRIPTION: 46 Vouchers and 19 Fusion Vouchers! v2.1.4.1c
 --- PREFIX: betm_vouchers
---- VERSION: 2.1.4.1(20240623)
+--- VERSION: 2.1.4.1c(20240624)
 --- BADGE_COLOUR: ED40BF
 
 ----------------------------------------------
@@ -110,6 +110,10 @@ config = {
     v_heat_death=true,
     v_deep_roots=true,
 }
+if not IN_SMOD1 then
+    config.v_undying=false
+    config.v_reincarnate=false
+end
 
 -- example: if used_voucher('slate') then ... end 
 -- setting it to global is for lovely patches
@@ -421,8 +425,22 @@ local function safe_add(a,b,default_value)
 end
 
 
+-- I don't know why there are so many reports about housing choice causing get_straight and get_X_same such function to crash, it seems that some card's rank becomes nil and someone has guessed about voucher created has no rank but created card won't come into played hands. Anyway I should try this
+    local Card_get_id_ref=Card.get_id
+    function Card:get_id()
+        local ret=Card_get_id_ref(self)
+        return ret or -math.random(100,1000000)
+    end
+
+function GET_PATH_COMPAT()
+    return IN_SMOD1 and SMODS.current_mod.path or SMODS.findModByID('BetmmaVouchers').path
+end
+
 local function INIT()
-    NFS.load(SMODS.current_mod.path .. "phantom.lua")()
+    if config.v_undying or config.v_reincarnate then
+        local PATH=GET_PATH_COMPAT()
+        NFS.load(PATH .. "phantom.lua")()
+    end
 
 --- deal with enhances effect changes when saving & loading
 do
@@ -2867,7 +2885,7 @@ do
     
     -- Phantom and its calculation are in phantom.lua
 
-end -- stow
+end -- undying
 
 
     -- ################
