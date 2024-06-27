@@ -63,82 +63,82 @@ jokerBlacklists={}
 
 
     
-    local localization = {
-        jjookkeerr = {
-            name = "西一袄小，吃藕丑",
-            text = {
-                "每张名字里包含“小丑”",
-                "二字的小丑牌",
-                "给予{X:mult,C:white} X#1# {}倍率",
-                "{s:0.8,C:inactive}由于技术原因，极少部分",
-                "{s:0.8,C:inactive}小丑牌可能无法计入"
-                -- if I count right there are 24 common, 6 uncommon and 3 rare jokers that satisfy this condition
-            }
-        },
-        ascension = {
-            name = "金宝升天",
-            text = {
-                "打出的牌型将视为上级牌型",
-                "来计算基础筹码和倍率",
-                "（例如：高牌视为对子，对子视为两对）",
-                -- How the poker hand "contained" is calculated should be clarified:
-                -- If you play a Straight Flush, originally it contains Straight Flush, Flush, Straight and High Card. After triggering ascension it is counted as 5oak and contains 5oak, Straight Flush, Flush, Straight and High Card. Though a real 5oak contains 4oak and 3oak, this 5oak from ascension doesn't contain them.
-            }
-        },
-        hasty = {
-            name = "急迫小丑",
-            text = {
-                "若第一次出牌就击败盲注",
-                "获得{C:money}$#1#"
-            }
-        },
-        errorr = {
-            name = "程错序误",
-            text = {
-                "弃掉的牌的点数",
-                "有{C:green}#1#/#2#{}的几率",
+local localization = {
+    jjookkeerr = {
+        name = "西一袄小，吃藕丑",
+        text = {
+            "每张名字里包含“小丑”",
+            "二字的小丑牌",
+            "给予{X:mult,C:white} X#1# {}倍率",
+            "{s:0.8,C:inactive}由于技术原因，极少部分",
+            "{s:0.8,C:inactive}小丑牌可能无法计入"
+            -- if I count right there are 24 common, 6 uncommon and 3 rare jokers that satisfy this condition
+        }
+    },
+    ascension = {
+        name = "金宝升天",
+        text = {
+            "打出的牌型将视为上级牌型",
+            "来计算基础筹码和倍率",
+            "（例如：高牌视为对子，对子视为两对）",
+            -- How the poker hand "contained" is calculated should be clarified:
+            -- If you play a Straight Flush, originally it contains Straight Flush, Flush, Straight and High Card. After triggering ascension it is counted as 5oak and contains 5oak, Straight Flush, Flush, Straight and High Card. Though a real 5oak contains 4oak and 3oak, this 5oak from ascension doesn't contain them.
+        }
+    },
+    hasty = {
+        name = "急迫小丑",
+        text = {
+            "若第一次出牌就击败盲注",
+            "获得{C:money}$#1#"
+        }
+    },
+    errorr = {
+        name = "程错序误",
+        text = {
+            "弃掉的牌的点数",
+            "有{C:green}#1#/#2#{}的几率",
             "发生随机改变"
-            }
-        },
-        piggy_bank = {
-            name = "猪猪存钱罐",
-            text = {
-                "扣除赢得资金的一半",
-                "存入钱罐{C:inactive}（计入售价）",
-                "每存入{C:money}$1{}获得{C:red}+#2#{}倍率",
-                "{C:inactive}（当前为{C:red}+#1#{C:inactive}倍率）"
-                -- dollar in it adds to its sold price
-            }
-        },
-        housing_choice = {
-            name = "葫芦入户",
-            text = {
-                "若打出的牌中包含{C:attention}葫芦",
-                "随机获取一张{C:attention}奖券",
-                "（每个底注限一次）",
-                "{C:inactive}(#1#)"
-                -- dollar in it adds to its sold price
-            }
-        },
-        jimbow = {
-            name = "Jimbow",
-            text = {
-                "This Joker gains {C:chips}+#2#{}",
-                "Chips {C:attention}#3#{},",
-                "context changes when achieved",
-                "{C:inactive}(Currently {C:chips}#1#{C:inactive} Chips)",
-                
-            }
+        }
+    },
+    piggy_bank = {
+        name = "猪猪存钱罐",
+        text = {
+            "扣除赢得资金的一半",
+            "存入钱罐{C:inactive}（计入售价）",
+            "每存入{C:money}$1{}获得{C:red}+#2#{}倍率",
+            "{C:inactive}（当前为{C:red}+#1#{C:inactive}倍率）"
+            -- dollar in it adds to its sold price
+        }
+    },
+    housing_choice = {
+        name = "葫芦入户",
+        text = {
+            "若打出的牌中包含{C:attention}葫芦",
+            "随机获取一张{C:attention}奖券",
+            "（每个底注限一次）",
+            "{C:inactive}（#1#）"
+            -- dollar in it adds to its sold price
+        }
+    },
+    jimbow = {
+        name = "蝴蝶结金宝",
+        text = {
+            "{C:attention}#3#",
+            "本牌获得{C:chips}+#2#{}筹码",
+            "上述要求会在达成后改变",
+            "{C:inactive}（当前为{C:chips}#1#{C:inactive}筹码）",
+            
         }
     }
+}
 
-    --[[SMODS.Joker:new(
-        name, slug,
-        config,
-        spritePos, loc_txt,
-        rarity, cost, unlocked, discovered, blueprint_compat, eternal_compat
-    )
-    ]]
+--[[SMODS.Joker:new(
+    name, slug,
+    config,
+    spritePos, loc_txt,
+    rarity, cost, unlocked, discovered, blueprint_compat, eternal_compat
+)
+]]
 
 local function INIT()
     local jokers = {
@@ -357,10 +357,21 @@ local function INIT()
         if context.discard and not context.other_card.debuff and
         pseudorandom('errorr') < G.GAME.probabilities.normal/card.ability.extra.odds then -- the argument of pseudorandom is hashed and only for random seed, so every string is ok
             local card=context.other_card
-            local suit_prefix = string.sub(card.base.suit, 1, 1)..'_'
-            local rank_suffix = {'2','3','4','5','6','7','8','9','T','J','Q','K','A'}
-            local rand = math.floor(pseudorandom('rank')*13+1)
-            card:set_base(G.P_CARDS[suit_prefix..rank_suffix[rand]])
+            local suit_prefix
+            if IN_SMOD1 then
+                suit_prefix = SMODS.Suits[card.base.suit].card_key
+            else
+                suit_prefix = string.sub(card.base.suit, 1, 1)
+            end
+            local rank_suffix
+            if IN_SMOD1 then
+                rank_suffix = pseudorandom_element(SMODS.Ranks, pseudoseed('rank')).card_key
+            else
+                local ranks = {'2','3','4','5','6','7','8','9','T','J','Q','K','A'}
+                local rand = math.floor(pseudorandom('rank')*13+1)
+                rank_suffix = ranks[rand]
+            end
+            card:set_base(G.P_CARDS[suit_prefix..'_'..rank_suffix])
             return {
                 message = localize('k_errorr'),
                 card = card,
@@ -471,32 +482,37 @@ end
 
 
 
-function SMODS.end_calculate_context(c)
-    if not c.after and not c.before and not c.other_joker and not c.repetition and not c.individual and
-        not c.end_of_round and not c.discard and not c.pre_discard and not c.debuffed_hand and not c.using_consumeable and
-        not c.remove_playing_cards and not c.cards_destroyed and not c.destroying_card and not c.setting_blind and
-        not c.first_hand_drawn and not c.playing_card_added and not c.skipping_booster and not c.skip_blind and
-        not c.ending_shop and not c.reroll_shop and not c.selling_card and not c.selling_self and not c.buying_card and
-        not c.open_booster then
-        return true
+if not SMODS.end_calculate_context then
+    function SMODS.end_calculate_context(c)
+        return c.joker_main
     end
-    return false
 end
 
 function randomly_redeem_voucher(no_random_please) -- xD
     -- local voucher_key = time==0 and "v_voucher_bulk" or get_next_voucher_key(true)
     -- time=1
+    local area
+    if G.STATE == G.STATES.HAND_PLAYED then
+        if not G.redeemed_vouchers_during_hand then
+            -- may need repositioning
+            G.redeemed_vouchers_during_hand = CardArea(
+                G.play.T.x, G.play.T.y, G.play.T.w, G.play.T.h, 
+                {type = 'play', card_limit = 5})
+        end
+        area = G.redeemed_vouchers_during_hand
+    else
+        area = G.play
+    end
     local voucher_key = no_random_please or get_next_voucher_key(true)
-    local card = Card(G.play.T.x + G.play.T.w/2 - G.CARD_W*1.27/2,
-    G.play.T.y + G.play.T.h/2-G.CARD_H*1.27/2, G.CARD_W, G.CARD_H, G.P_CARDS.empty, G.P_CENTERS[voucher_key],{bypass_discovery_center = true, bypass_discovery_ui = true})
+    local card = Card(area.T.x + area.T.w/2 - G.CARD_W/2,
+    area.T.y + area.T.h/2-G.CARD_H/2, G.CARD_W, G.CARD_H, G.P_CARDS.empty, G.P_CENTERS[voucher_key],{bypass_discovery_center = true, bypass_discovery_ui = true})
     card:start_materialize()
-    G.play:emplace(card)
+    area:emplace(card)
     card.cost=0
     card.shop_voucher=false
     local current_round_voucher=G.GAME.current_round.voucher
     card:redeem()
     G.GAME.current_round.voucher=current_round_voucher -- keep the shop voucher unchanged since the voucher bulk may be from voucher pack or other non-shop source
-    card.should_remove=true -- if this function is called when calculating hand, this voucher will go to the deck and cause problem. I could only think of removing these vouchers in draw_from_discard_to_deck
     G.E_MANAGER:add_event(Event({
         trigger = 'after',
         --blockable = false,
@@ -507,46 +523,26 @@ function randomly_redeem_voucher(no_random_please) -- xD
             return true
         end}))   
 end
-local G_FUNCS_draw_from_discard_to_deck_ref=G.FUNCS.draw_from_discard_to_deck
-    G.FUNCS.draw_from_discard_to_deck = function(e)
-        for k, v in ipairs(G.discard.cards) do
-            if v.ability.set=='Voucher' then
-                -- print(k,'addad')
-                --k.k()
-                G.E_MANAGER:add_event(Event({
-                    func = (function()     
-                            v:remove()
-                    return true end)
-                }))
-            end
-        end
-        G.E_MANAGER:add_event(Event({
-            trigger = 'immediate',
-            func = (function()     
-                G_FUNCS_draw_from_discard_to_deck_ref(e)
-            return true end)
-          }))
-    end
 
-    if IN_SMOD1 then
+if IN_SMOD1 then
+    INIT()
+else
+    SMODS['INIT']=SMODS['INIT'] or {}
+    SMODS['INIT']['BetmmaJokers']=function()
+        SMODS.Joker=SMODS_Joker_fake
         INIT()
-    else
-        SMODS['INIT']=SMODS['INIT'] or {}
-        SMODS['INIT']['BetmmaJokers']=function()
-            SMODS.Joker=SMODS_Joker_fake
-            INIT()
-            SMODS.Joker=SMODS_Joker_ref
-            loc_text()
-            for k,v in pairs(Jokers) do
-                
-                if type(v.calculate)=='function' then
-                    v.calculate_ref=v.calculate
-                    v.calculate=function(card, context)
-                        return v.calculate_ref(card,card,context)
-                    end
+        SMODS.Joker=SMODS_Joker_ref
+        loc_text()
+        for k,v in pairs(Jokers) do
+            
+            if type(v.calculate)=='function' then
+                v.calculate_ref=v.calculate
+                v.calculate=function(card, context)
+                    return v.calculate_ref(card,card,context)
                 end
             end
         end
     end
+end
 ----------------------------------------------
 ------------MOD CODE END----------------------

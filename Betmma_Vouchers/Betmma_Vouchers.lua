@@ -2,9 +2,9 @@
 --- MOD_NAME: Betmma Vouchers
 --- MOD_ID: BetmmaVouchers
 --- MOD_AUTHOR: [Betmma]
---- MOD_DESCRIPTION: 46 Vouchers and 20 Fusion Vouchers! v2.1.4.2
+--- MOD_DESCRIPTION: 46 Vouchers and 21 Fusion Vouchers! v2.1.5.1
 --- PREFIX: betm_vouchers
---- VERSION: 2.1.4.2(20240625)
+--- VERSION: 2.1.5.1(20240627)
 --- BADGE_COLOUR: ED40BF
 
 ----------------------------------------------
@@ -110,6 +110,7 @@ config = {
     v_heat_death=true,
     v_deep_roots=true,
     v_solar_system=true,
+    v_forbidden_area=true,
 }
 if not IN_SMOD1 then
     config.v_undying=false
@@ -262,11 +263,23 @@ do -- randomly create card function series
     function randomly_redeem_voucher(no_random_please) -- xD
         -- local voucher_key = time==0 and "v_voucher_bulk" or get_next_voucher_key(true)
         -- time=1
+        local area
+        if G.STATE == G.STATES.HAND_PLAYED then
+            if not G.redeemed_vouchers_during_hand then
+                -- may need repositioning
+                G.redeemed_vouchers_during_hand = CardArea(
+                    G.play.T.x, G.play.T.y, G.play.T.w, G.play.T.h, 
+                    {type = 'play', card_limit = 5})
+            end
+            area = G.redeemed_vouchers_during_hand
+        else
+            area = G.play
+        end
         local voucher_key = no_random_please or get_next_voucher_key(true)
-        local card = Card(G.play.T.x + G.play.T.w/2 - G.CARD_W*1.27/2,
-        G.play.T.y + G.play.T.h/2-G.CARD_H*1.27/2, G.CARD_W, G.CARD_H, G.P_CARDS.empty, G.P_CENTERS[voucher_key],{bypass_discovery_center = true, bypass_discovery_ui = true})
+        local card = Card(area.T.x + area.T.w/2 - G.CARD_W/2,
+        area.T.y + area.T.h/2-G.CARD_H/2, G.CARD_W, G.CARD_H, G.P_CARDS.empty, G.P_CENTERS[voucher_key],{bypass_discovery_center = true, bypass_discovery_ui = true})
         card:start_materialize()
-        G.play:emplace(card)
+        area:emplace(card)
         card.cost=0
         card.shop_voucher=false
         local current_round_voucher=G.GAME.current_round.voucher
@@ -332,6 +345,7 @@ do -- randomly create card function series
                             card.ability[extra.extra_ability]=true
                         end
                         card.ability.BetmmaVouchers=true
+                        -- G.jokers:emplace(card)
                         G.consumeables:emplace(card)
                         G.GAME.consumeable_buffer = 0
                         if message~=nil then
@@ -1485,11 +1499,14 @@ do
         if #G.consumeables.cards < G.consumeables.config.card_limit then 
             e.config.colour = G.C.GREEN
             e.config.button = 'reserve_card' 
+        elseif #G.jokers.cards<G.jokers.config.card_limit and used_voucher('forbidden_area') then
+            e.config.colour = G.C.GREEN
+            e.config.button = 'reserve_card_to_joker_slot' 
         else
           e.config.colour = G.C.UI.BACKGROUND_INACTIVE
           e.config.button = nil
         end
-      end
+    end
     G.FUNCS.reserve_card = function(e) -- only works for consumeables
         local c1 = e.config.ref_table
         G.E_MANAGER:add_event(Event({
@@ -1504,6 +1521,28 @@ do
               c1.children.buy_button = nil
               remove_nils(c1.children)
               G.consumeables:emplace(c1)
+              G.GAME.pack_choices = G.GAME.pack_choices - 1
+              if G.GAME.pack_choices <= 0 then
+                G.FUNCS.end_consumeable(nil, delay_fac)
+              end
+              return true
+            end
+        }))
+    end
+    G.FUNCS.reserve_card_to_joker_slot = function(e) -- only works for consumeables
+        local c1 = e.config.ref_table
+        G.E_MANAGER:add_event(Event({
+            trigger = 'after',
+            delay = 0.1,
+            func = function()
+              c1.area:remove_card(c1)
+              c1:add_to_deck()
+              if c1.children.price then c1.children.price:remove() end
+              c1.children.price = nil
+              if c1.children.buy_button then c1.children.buy_button:remove() end
+              c1.children.buy_button = nil
+              remove_nils(c1.children)
+              G.jokers:emplace(c1)
               G.GAME.pack_choices = G.GAME.pack_choices - 1
               if G.GAME.pack_choices <= 0 then
                 G.FUNCS.end_consumeable(nil, delay_fac)
@@ -4317,9 +4356,9 @@ do
 
     local get_chip_x_mult_ref=Card.get_chip_x_mult
     function Card:get_chip_x_mult(context)
-        local ret=get_chip_x_mult_ref(self)
+        local ret=get_chip_x_mult_ref(self,context)
         if used_voucher('real_random') and not self.debuff and self.config.center.real_random_abilities then
-            if ret==0 then ret=1 end
+            if not ret or ret==0 then ret=1 end
             local key='x_mult'
             local num= self.config.center.real_random_abilities.values[key].num
             if num<REAL_RANDOM_COLLAPSE_AMOUNT then
@@ -4395,30 +4434,6 @@ do
         end
         return ret
     end
-
-    local G_FUNCS_draw_from_discard_to_deck_ref=G.FUNCS.draw_from_discard_to_deck
-    G.FUNCS.draw_from_discard_to_deck = function(e)
-        if (used_voucher('real_random')) then
-            for k, v in ipairs(G.discard.cards) do
-                if v.ability.set=='Voucher' then
-                    -- print(k,'addad')
-                    --k.k()
-                    G.E_MANAGER:add_event(Event({
-                        func = (function()     
-                                v:remove()
-                        return true end)
-                    }))
-                end
-            end
-        end
-        G.E_MANAGER:add_event(Event({
-            trigger = 'immediate',
-            func = (function()     
-                G_FUNCS_draw_from_discard_to_deck_ref(e)
-            return true end)
-          }))
-    end
-
 end -- real random
 do
     local name="4D Vouchers"
@@ -4774,6 +4789,19 @@ do
     end
 
     local level_up_hand_ref=level_up_hand
+    function level_up_hand(card,hand,instant,amount)
+        -- TarotDX forgot to add the second level for DX planets when instant is true LOL
+            amount = amount or 1
+            if instant and card and card.ability and card.ability.set and card.ability.set == "Planet_dx" then    
+                G.GAME.hands[hand].level = math.max(0, G.GAME.hands[hand].level + amount)
+                G.GAME.hands[hand].mult = math.max(G.GAME.hands[hand].mult + G.GAME.hands[hand].l_mult*(amount), 1)
+                G.GAME.hands[hand].chips = math.max(G.GAME.hands[hand].chips + G.GAME.hands[hand].l_chips*(amount), 0)
+            end
+        
+        level_up_hand_ref(card,hand,instant,amount)
+    end
+
+    local level_up_hand_ref=level_up_hand
     function level_up_hand(card, hand, instant, amount)
         if G.betmma_solar_system_times then
             instant=true
@@ -4826,6 +4854,167 @@ do
     end
 
 end -- solar system
+do
+    local name="Forbidden Area"
+    local id="forbidden_area"
+    local loc_txt = {
+        name = name,
+        text = {
+            "When no consumable slot left,",
+            "buying a {C:attention}Consumable{} card moves it to",
+            "{C:attention}Joker area{} and it acts like a Joker",
+            "{C:inactive}(Reserve Area + Undying){}"
+        }
+    }
+    local this_v = SMODS.Voucher{
+        name=name, key=id,
+        config={rarity=3},
+        pos={x=0,y=0}, loc_txt=loc_txt,
+        cost=10, unlocked=true, discovered=true, available=true, requires={MOD_PREFIX_V..'reserve_area',MOD_PREFIX_V..'undying'}
+    }
+    handle_atlas(id,this_v)
+    this_v.loc_vars = function(self, info_queue, center)
+        return {vars={}}
+    end
+    handle_register(this_v)
+
+    local G_FUNCS_check_for_buy_space_ref=G.FUNCS.check_for_buy_space
+    G.FUNCS.check_for_buy_space = function(card)
+        if (card.ability.consumeable and not(#G.consumeables.cards < G.consumeables.config.card_limit + ((card.edition and card.edition.negative) and 1 or 0))) and used_voucher('forbidden_area') and (#G.jokers.cards < G.jokers.config.card_limit + ((card.edition and card.edition.negative) and 1 or 0))then
+            card.betmma_forbidden_area_bought=true
+            return true
+        end
+        local ret=G_FUNCS_check_for_buy_space_ref(card)
+        return ret
+    end
+
+    function after_event(func)
+        G.E_MANAGER:add_event(Event({
+            trigger = 'after',
+            blockable=true,
+            blocking=true,
+            delay=0.1,
+            func = (function()
+                func()
+                return true
+            end)
+        }))
+    end
+
+    function mark_highlighted_cards()
+        for i=1,#G.hand.highlighted do
+            G.hand.highlighted[i].betmma_highlight_marked=true
+        end
+    end
+
+    function restore_highlighted_cards()
+        local count=0
+        for i=1,#G.hand.cards do
+            if G.hand.cards[i].betmma_highlight_marked and not G.hand.cards[i].highlighted then
+                G.hand:add_to_highlighted(G.hand.cards[i])
+                count=count+1
+            elseif G.hand.cards[i].highlighted then
+                count=count+1
+            end
+        end
+        return count
+    end
+
+    function unmark_highlighted_cards()
+        for i=1,#G.hand.cards do
+            G.hand.cards[i].betmma_highlight_marked=false
+        end
+    end
+
+    local Card_set_ability_ref=Card.set_ability
+    function Card:set_ability(center, initial, delay_sprites)
+        local highlight_marked=self.betmma_highlight_marked
+        Card_set_ability_ref(self,center,initial,delay_sprites)
+        if highlight_marked then
+            self.betmma_highlight_marked=true
+        end
+    end
+
+    local copy_card_ref=copy_card
+    function copy_card(other, new_card, card_scale, playing_card, strip_edition)
+        local ret=copy_card_ref(other, new_card, card_scale, playing_card, strip_edition)
+        if other.betmma_highlight_marked then
+            ret.betmma_highlight_marked=true
+        end
+        return ret
+    end
+
+    function recursion_play_cards(max_index,now_index) -- Localthunk only uses nested events. I use recursive events instead :smiling_imp:
+        if now_index>max_index then
+            after_event(function()   
+                print('end')
+                G_FUNCS_play_cards_from_highlighted_ref(e)
+                unmark_highlighted_cards()
+                G.hand.config.highlighted_limit=5
+            end)
+            return
+        end
+        local self=G.jokers.cards[now_index]
+        if self==nil then return end -- jokers have been changed due to ankh or hex or other things. Must stop function imemdiately
+        if self.ability.consumeable and not self.debuff then
+            after_event(function()
+                local keep_on_use=self.config.center.keep_on_use
+                local max_highlighted=self.ability.consumeable.max_highlighted
+                local mod_num=self.ability.consumeable.mod_num
+                local used=false
+                if not self.config.center.keep_on_use then
+                    self.config.center.keep_on_use=function(center,card)return true end -- SMOD supports keep on use by setting this function
+                end
+                if max_highlighted then
+                    self.ability.consumeable.max_highlighted=999
+                    self.ability.consumeable.mod_num=999
+                end
+                if self:can_use_consumeable(nil,true) then
+                    G.FUNCS.use_card({config={ref_table=self}})
+                    used=true
+                end
+                self.ability.consumeable.max_highlighted=max_highlighted
+                self.ability.consumeable.mod_num=mod_num
+                self.config.center.keep_on_use=keep_on_use
+                
+                after_event(function()
+                    local count=used and restore_highlighted_cards() or 1
+                    -- for i=1,#G.hand.cards do
+                    --     if G.hand.cards[i].betmma_highlight_marked then
+                    --         print(i,"index")
+                    --     end
+                    -- end
+                    -- print(#G.hand.highlighted)
+                    if count>0 then
+                        after_event(function()
+                            recursion_play_cards(max_index,now_index+1)
+                        end)
+                    end
+                end)
+            end)
+            return
+        end
+        after_event(function()
+            recursion_play_cards(max_index,now_index+1)
+        end)
+    end
+
+    G_FUNCS_play_cards_from_highlighted_ref=G.FUNCS.play_cards_from_highlighted
+    G.FUNCS.play_cards_from_highlighted = function(e)
+        if used_voucher('forbidden_area') then
+            G.hand.config.highlighted_limit=999
+            mark_highlighted_cards()
+            recursion_play_cards(#G.jokers.cards,1)
+        else
+            G_FUNCS_play_cards_from_highlighted_ref(e)
+        end
+    end
+    -- local Card_calculate_joker_ref=Card.calculate_joker
+    -- function Card:calculate_joker(context)
+    --     return Card_calculate_joker_ref(self,context)
+    -- end
+
+end -- forbidden area
 
     -- this challenge is only for test
     -- table.insert(G.CHALLENGES,1,{
@@ -4851,7 +5040,7 @@ end -- solar system
     --         -- {id = 'j_oops'},
     --         {id = 'j_baron', },
     --         {id = 'j_mime', },
-    --         {id = 'j_mime', },
+    --         {id = 'j_cry_universum', },
     --         -- {id = 'j_madness', eternal = true},
     --         {id = JOKER_MOD_PREFIX..'j_jimbow'},--, edition='phantom'},
     --         {id = 'j_ceremonial', pinned = true},
@@ -4878,10 +5067,10 @@ end -- solar system
     --         {id = MOD_PREFIX_V.. 'real_random'},
     --         {id = 'v_paint_brush'},
     --         -- {id = 'v_liquidation'},
-    --         {id = MOD_PREFIX_V.. 'eternity'},
-    --         {id = MOD_PREFIX_V.. 'half_life'},
-    --         {id = MOD_PREFIX_V.. 'heat_death'},
-    --         {id = MOD_PREFIX_V.. 'engulfer'},
+    --         {id = MOD_PREFIX_V.. 'overshopping'},
+    --         {id = MOD_PREFIX_V.. 'forbidden_area'},
+    --         {id = MOD_PREFIX_V.. 'reserve_area_plus'},
+    --         {id = MOD_PREFIX_V.. 'reserve_area'},
     --         -- {id = MOD_PREFIX_V.. 'undying'},
     --         -- {id = MOD_PREFIX_V.. 'reincarnate'},
     --         --{id = MOD_PREFIX_V.. 'chaos'},
