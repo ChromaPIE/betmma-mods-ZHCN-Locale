@@ -98,10 +98,6 @@ vec4 HSL(vec4 c)
 	return hsl;
 }
 
-float mod(float a, float b){
-	return a-(b*floor(a/b));
-}
-
 vec4 effect( vec4 colour, Image texture, vec2 texture_coords, vec2 screen_coords )
 {
     vec4 tex = Texel(texture, texture_coords);
@@ -115,7 +111,7 @@ vec4 effect( vec4 colour, Image texture, vec2 texture_coords, vec2 screen_coords
 
 	vec4 hsl = HSL(vec4(tex.r*saturation_fac, tex.g*saturation_fac, tex.b, tex.a));
 
-	float t = tentacle.y*2.221 + real_time*99 + time*199;
+	float t = tentacle.y*2.221 + real_time*99. + time*199.;
 	vec2 floored_uv = (floor((uv*texture_details.ba)))/texture_details.ba;
     vec2 uv_scaled_centered = (floored_uv - 0.5) * 50.;
 	
@@ -132,14 +128,14 @@ vec4 effect( vec4 colour, Image texture, vec2 texture_coords, vec2 screen_coords
 	uv.y=(uv.y-0.5)*1.3;
 	float r2=uv.y*uv.y+uv.x*uv.x;
 	float r=sqrt(r2);
-	float r8=r2*r2*r2*r2*16;
-	float angle=atan(uv.y,uv.x)*3+ sin(real_time)+field*2.5*r ;
+	float r8=r2*r2*r2*r2*16.;
+	float angle=atan(uv.y,uv.x)*3.+ sin(real_time)+field*2.5*r ;
 	float ray=cos(angle);//-mod(real_time, .2)
 	float ray4=ray * ray ;
-	if (1-ray4 > 0.001/(r2*r2)-clamp(0.25*(r-0.62),0,0.3))
+	if (1.-ray4 > 0.001/(r2*r2)-clamp(0.25*(r-0.62),0.0,0.3))
 	ray4 = ray4/8.;
-    float res = (1 - (.4-clamp(0.03/r2,0.0,0.4))* 
-		ray4 *2 
+    float res = (1. - (.4-clamp(0.03/r2,0.0,0.4))* 
+		ray4 *2.
 		);
     hsl.z = clamp(hsl.z* res , 0.0, 1.0);
 
