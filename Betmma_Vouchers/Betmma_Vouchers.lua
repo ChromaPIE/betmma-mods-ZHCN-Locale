@@ -5023,10 +5023,10 @@ do
     local name="Voucher Tycoon"
     local id="voucher_tycoon"
     local loc_txt = {
-        name = name,
+        name = "奖券大亨",
         text = {
-            "{C:attention}Vouchers{} appear in the shop",
-            "{C:inactive}(Oversupply + Planet Tycoon){}"
+            "{C:attention}奖券{}会出现在商店的卡牌槽位中",
+            "{C:inactive}（供应过量 + 星球大亨）"
         }
     }
     local this_v = SMODS.Voucher{
