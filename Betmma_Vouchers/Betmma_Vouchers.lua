@@ -219,7 +219,7 @@ function SMODS.current_mod.process_loc_text()
     G.localization.misc.dictionary.b_vanish = "消散"
     G.localization.misc.dictionary.k_heat_death="热寂！"
     G.localization.misc.dictionary.k_undying="不灭！"
-    G.localization.misc.dictionary.k_reincarnate="转世！"
+    G.localization.misc.dictionary.k_reincarnate="还魂！"
     G.localization.misc.dictionary.k_solar_system="太阳系！"
     G.localization.misc.dictionary.over_retriggered = "Over-retriggered: "
     for k,v in pairs(real_random_data) do
@@ -2891,10 +2891,10 @@ do
     local name="Undying"
     local id="undying"
     local loc_txt = {
-        name = name,
+        name = "不灭",
         text = {
-            "When a non-{C:dark_edition}Phantom{} Joker is",
-            "destroyed, create a {C:dark_edition}Phantom{} copy",
+            "摧毁非{C:dark_edition}幽形{}小丑牌后",
+            "生成一张{C:dark_edition}幽形{}复制",
         }
     }
     local this_v = SMODS.Voucher{
@@ -2912,10 +2912,10 @@ do
     local name="Reincarnate"
     local id="reincarnate"
     local loc_txt = {
-        name = name,
+        name = "转世还魂",
         text = {
-            "When a {C:dark_edition}Phantom{} Joker is sold,",
-            "create a joker of same {C:attention}rarity{}",
+            "售出{C:dark_edition}幽形{}小丑牌后",
+            "生成一张{C:attention}稀有度{}与之相同的小丑牌",
         }
     }
     local this_v = SMODS.Voucher{
@@ -3402,11 +3402,10 @@ do
     local loc_txt = {
         name = "艺作画廊",
         text = {
-            "{C:attention}+#1#{} Ante to win.",
-            "When {C:attention}Boss Blind{} is defeated,", 
-            "randomly get one of the following:",
-            "{C:blue}+#1#{} hand, {C:red}+#1#{} discard or {C:attention}-#1#{} Ante",
-            "{C:inactive}(Hieroglyph + Abstract Art){}"
+            "赢下游戏需通关底注数{C:attention}+#1#",
+            "击败{C:attention}Boss盲注{}时，随机获得：", 
+            "出牌次数{C:blue}+#1#{}、弃牌次数{C:red}+#1#{}或底注{C:attention}-#1#",
+            "{C:inactive}（象形文字 + 抽象艺术）"
         }
     }
     local this_v = SMODS.Voucher{
@@ -4729,11 +4728,10 @@ do
     local name="Deep Roots"
     local id="deep_roots"
     local loc_txt = {
-        name = name,
+        name = "财富根植",
         text = {
-            "You earn {C:money}interest{} based on",
-            "the {C:attention}absolute value{} of your money",
-            "{C:inactive}(Seed Money + Debt Burden){}"
+            "{C:money}利息{}结算基于{C:money}资金{}的{C:attention}绝对值",
+            "{C:inactive}（种子基金 + 债多压身）"
         }
     }
     local this_v = SMODS.Voucher{
@@ -4762,12 +4760,12 @@ do
     local name="Solar System"
     local id="solar_system"
     local loc_txt = {
-        name = name,
+        name = "太阳系",
         text = {
-            "Retrigger {C:planet}Planet Card{} once",
-            "per {C:planet}Planet Card{} held,",
-            "including the using one",
-            "{C:inactive}(Planet Merchant + Event Horizon){}"
+            "每拥有一张星球牌",
+            "（包含正在结算的星球牌）",
+            "使用的{C:planet}星球牌{}可重新触发一次",
+            "{C:inactive}（星球牌商人 + 事件视界）"
         }
     }
     local this_v = SMODS.Voucher{
@@ -4864,12 +4862,11 @@ do
     local name="Forbidden Area"
     local id="forbidden_area"
     local loc_txt = {
-        name = name,
+        name = "禁区走私",
         text = {
-            "When no consumable slot left,",
-            "buying a {C:attention}Consumable{} card moves it to",
-            "{C:attention}Joker area{} and it acts like a Joker",
-            "{C:inactive}(Reserve Area + Undying){}"
+            "购买{C:attention}消耗牌{}时，若槽位已满",
+            "则将其作为小丑牌放入{C:attention}小丑牌槽位",
+            "{C:inactive}（打包带走 + 不灭）"
         }
     }
     local this_v = SMODS.Voucher{
