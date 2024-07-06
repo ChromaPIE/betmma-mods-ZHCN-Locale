@@ -15,7 +15,7 @@ A collection of mods made by me for Balatro.
 - Housing Choice: Get a random voucher if played hand contains Full House. This can only trigger once per ante.
 - Jimbow: This Joker gains +15 Chips when {context}. Context changes when achieved.
 
-# Betmma Vouchers: Adds 46 Vouchers and 22 fusion Vouchers.
+# Betmma Vouchers: Adds 48 Vouchers and 22 fusion Vouchers.
 Vouchers have rarities. Rarity affects the chance a voucher is added into the random pool. Only vouchers added into the pool can be chosen and appear. For example, if you have redeemed all vouchers but one uncommon, rare or legendary voucher, it still can not appear. Specifically, the chances for uncommon, rare and legendary vouchers to be in the pool are 1/2, 1/4 and 1/20. Vanilla vouchers and vouchers from other mods are considered common.
 ## Normal Vouchers
 - Oversupply: Gain 1 Voucher Tag after beating boss blind.
@@ -66,6 +66,8 @@ Vouchers have rarities. Rarity affects the chance a voucher is added into the ra
 - Reincarnation: When a Phantom Joker is sold, create a joker of same rarity.
 (Phantom Edition: +1 Joker Slot. 50% chance to trigger.)
 Undying and Reincarnation are unavailable on Steamodded 0.9.8 version.
+- Bargain Aisle: First item in shop is free.
+- Clearance Aisle: First pack in shop is free.
 ## Fusion Vouchers
 Fusion Vouchers aren't fused by clicking a fusion button. Instead they appear randomly and can be bought regularly only after you have redeemed the required 2 vouchers. (May change in the future)
 - Gold Round Up (Round Up + Gold Coin): Your money always round up to nearest even number.
@@ -104,4 +106,4 @@ This structure code is based on [Coupon Book mod](https://github.com/nicholassam
 Rewrite the Run Info - Vouchers tab to enable it to display dozens of redeemed vouchers.
 
 # Note that [Steamodded](https://github.com/Steamopollys/Steamodded) is required to load the mods.
-The mods are written and tested on both Steamodded 1.0.0 and 0.9.8, but I suggest using 1.0.0.
+The mods are written and tested on Steamodded 1.0.0. There was code for 0.9.8 compatibility but since most people are shifting to SMOD 1.0.0 and SMOD 1.0.0 supports 0.9.8 mods now, I won't check 0.9.8 compatibility very frequently and can't promise its compatibility.
