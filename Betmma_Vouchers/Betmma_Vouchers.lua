@@ -2941,9 +2941,10 @@ do
     local name="Bargain Aisle"
     local id="bargain_aisle"
     local loc_txt = {
-        name = name,
+        name = "降价促销",
         text = {
-            "First item in shop is {C:attention}free{}",
+            "每个商店内的第一件商品",
+            "均为{C:attention}免费"
         }
     }
     local this_v = SMODS.Voucher{
@@ -2961,9 +2962,10 @@ do
     local name="Clearance Aisle"
     local id="clearance_aisle"
     local loc_txt = {
-        name = name,
+        name = "清仓处理",
         text = {
-            "First pack in shop is {C:attention}free{}",
+            "每个商店内的第一个补充包",
+            "均为{C:attention}免费"
         }
     }
     local this_v = SMODS.Voucher{
