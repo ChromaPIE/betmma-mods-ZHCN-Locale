@@ -5,10 +5,10 @@
     local editions={
         {
             loc_txt={
-                name = 'Phantom',
+                name = '幽形',
                 text = {
-                    "{C:dark_edition}+1{} Joker Slot.", 
-                    "{C:red}50% chance to trigger",
+                    "小丑牌槽位{C:dark_edition}+1", 
+                    "仅有{C:red}50%{}的几率触发",
                     -- "When destroyed, lose {C:dark_edition}Phantom{}",
                     -- "and {C:attention}duplicate{} itself twice"
                 }
@@ -18,9 +18,9 @@
         },
         {
             loc_txt={
-                name = 'Tentacle',
+                name = '触角',
                 text = {
-                    "{C:dark_edition}Tentacle{}.",
+                    "{C:dark_edition}触角{}。",
                 }
             },
         }
