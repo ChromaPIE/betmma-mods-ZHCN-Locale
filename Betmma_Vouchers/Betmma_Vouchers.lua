@@ -215,7 +215,7 @@ function SMODS.current_mod.process_loc_text()
     G.localization.misc.dictionary.k_target_generate = "命中！"
     G.localization.misc.dictionary.k_bulls_eye_generate = "正中十环！"
     G.localization.misc.dictionary.b_reserve = "保留"
-    G.localization.misc.dictionary.k_transfer_ability = "Transfer!"
+    G.localization.misc.dictionary.k_transfer_ability = "转移！"
     G.localization.misc.dictionary.k_overkill_edition = "射穿！"
     G.localization.misc.dictionary.k_big_blast_edition = "炸飞！"
     G.localization.misc.dictionary.b_flip_hand = "翻面"
@@ -229,8 +229,8 @@ function SMODS.current_mod.process_loc_text()
     for k,v in pairs(real_random_data) do
         G.localization.descriptions.Enhanced['real_random_'..k] =v 
     end
-    G.localization.descriptions.Enhanced.ellipsis={text={'{C:inactive}(#1# abilities omitted)'}}
-    G.localization.descriptions.Enhanced.multiples={text={'{C:inactive}(X#1#)'}}
+    G.localization.descriptions.Enhanced.ellipsis={text={'{C:inactive}（已省略#1#项能力）'}}
+    G.localization.descriptions.Enhanced.multiples={text={'{C:inactive}（X#1#）'}}
     for k, v in pairs(betmma_extra_data) do
         for k2, v2 in pairs(v) do
             G.localization.misc[k][k2]=v2
@@ -2808,10 +2808,10 @@ do
     local name="Stow"
     local id="stow"
     local loc_txt = {
-        name = name,
+        name = "层叠堆放",
         text = {
-            "{C:dark_edition}+#1#{} Joker Slot.",
-            "Leftmost joker is debuffed",
+            "小丑牌槽位{C:dark_edition}+#1#",
+            "最左侧的小丑牌失效",
         }
     }
     local this_v = SMODS.Voucher{
@@ -2829,10 +2829,10 @@ do
     local name="Stash"
     local id="stash"
     local loc_txt = {
-        name = name,
+        name = "箱中玄机",
         text = {
-            "{C:dark_edition}+#1#{} Joker Slot.",
-            "Rightmost joker is debuffed",
+            "小丑牌槽位{C:dark_edition}+#1#",
+            "最右侧的小丑牌失效",
         }
     }
     local this_v = SMODS.Voucher{
@@ -3761,12 +3761,11 @@ do
     local name="Real Random"
     local id="real_random"
     local loc_txt = {
-        name = name,
+        name = "真随机",
         text = {
-            "Randomize {C:attention}Lucky Card{} effects.",
-            "Create a negative {C:attention}Magician{}",
-            "when blind begins",
-            "{C:inactive}(Crystal Ball + Omnicard){}"
+            "使{C:attention}幸运牌{}的效果随机化",
+            "盲注开始时生成一张{C:dark_edition}负片{C:attention}魔术师",
+            "{C:inactive}（水晶球 + 全能卡）"
         }
     }
     local this_v = SMODS.Voucher{
@@ -4528,12 +4527,11 @@ do
     local name="4D Vouchers"
     local id="4d_vouchers"
     local loc_txt = {
-        name = name,
+        name = "四维奖券",
         text = {
-            "Rerolls apply to {C:attention}Vouchers{},",
-            "but rerolled Vouchers",
-            "cost {C:attention}$#1#{} more",
-            "{C:inactive}(4D Boosters + Oversupply){}"
+            "重掷会对{C:attention}奖券{}生效",
+            "但会使新的奖券价格上涨{C:attention}$#1#",
+            "{C:inactive}（四维堆叠 + 供应过量）"
         }
     }
     local this_v = SMODS.Voucher{
