@@ -20,7 +20,9 @@
             loc_txt={
                 name = '触角',
                 text = {
-                    "{C:dark_edition}触角{}。",
+                    "选择{C:attention}盲注{}时",
+                    "将右侧小丑牌的数值",
+                    "加值至本牌并摧毁之"
                 }
             },
         }
