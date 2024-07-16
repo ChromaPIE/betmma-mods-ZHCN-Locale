@@ -2,10 +2,11 @@
 --- MOD_NAME: Betmma Vouchers
 --- MOD_ID: BetmmaVouchers
 --- MOD_AUTHOR: [Betmma]
---- MOD_DESCRIPTION: 48 Vouchers and 23 Fusion Vouchers! v2.1.6.3
+--- MOD_DESCRIPTION: 48 Vouchers and 23 Fusion Vouchers! v2.1.6.4
 --- PREFIX: betm_vouchers
---- VERSION: 2.1.6.3(20240708)
+--- VERSION: 2.1.6.4(20240710)
 --- BADGE_COLOUR: ED40BF
+--- PRIORITY: -1
 
 ----------------------------------------------
 ------------MOD CODE -------------------------
@@ -247,11 +248,19 @@ function SMODS.current_mod.process_loc_text()
     end
 end
 
-local usingTalisman = function() return SMODS.Mods and SMODS.Mods["Talisman"] and Big and true or false end
+local usingTalisman = function() return SMODS.Mods and SMODS.Mods["Talisman"] and Big and Talisman.config_file.break_infinity or false end
 local usingCryptid=SMODS.Mods and SMODS.Mods["Cryptid"] or false
 
 function TalismanCompat(num)
-	return usingTalisman() and Big:new(num) or num
+    local using=usingTalisman()
+    if not using then return num end
+    if using=='omeganum'then
+        return to_big(num)
+    end
+    if (using==true or using=='bignumber')then
+        return to_big(num)
+    end
+	return num
 end
 
 local function get_plain_text_from_localize(final_line)
@@ -472,10 +481,11 @@ function GET_PATH_COMPAT()
 end
 
 local function INIT()
+    local PATH=GET_PATH_COMPAT()
     if config.v_undying or config.v_reincarnate then
-        local PATH=GET_PATH_COMPAT()
         NFS.load(PATH .. "phantom.lua")()
     end
+    -- NFS.load(PATH .. 'Betmma_Abilities.lua')
 
 --- deal with enhances effect changes when saving & loading
 do
@@ -989,14 +999,14 @@ do
     local mod_chips_ref=mod_chips
     function mod_chips(_chips)
         if used_voucher('round_up') then
-          _chips = usingTalisman() and (_chips / Big:new(10)):ceil() * Big:new(10) or math.ceil(_chips/10)*10
+          _chips = usingTalisman() and ((_chips+9.9999) / to_big(10)):floor() * to_big(10) or math.ceil(_chips/10)*10
         end
         return mod_chips_ref(_chips)
     end
     local mod_mult_ref=mod_mult
     function mod_mult(_mult)
         if used_voucher('round_up_plus') then
-            _mult= usingTalisman() and (_mult / Big:new(10)):ceil() * Big:new(10) or math.ceil(_mult/10)*10
+            _mult= usingTalisman() and ((_mult+9.9999) / to_big(10)):floor() * to_big(10) or math.ceil(_mult/10)*10
         end
         return mod_mult_ref(_mult)
     end
@@ -2884,7 +2894,8 @@ do
     function Card:draw(layer)
         if is_hidden(self)then
             if self.stash_debuff==nil then
-                self.stash_debuff=self.debuff
+                self.stash_debuff=(self.debuff and true or false)
+                self.stash_debuff_has=true
                 self:set_debuff(true)
             end
             Card_draw_ref(self,layer)
@@ -2894,9 +2905,10 @@ do
             end
             return
         else
-            if self.stash_debuff~=nil then
+            if self.stash_debuff_has then
                 self:set_debuff(self.stash_debuff)
                 self.stash_debuff=nil
+                self.stash_debuff_has=nil
             end
         end
         Card_draw_ref(self,layer)
@@ -5269,7 +5281,7 @@ do
 end -- cryptozoology
 
     -- this challenge is only for test
-    if nil then
+    if 1 then
         
         table.insert(G.CHALLENGES,1,{
             name = "TestVoucher",
@@ -5294,7 +5306,7 @@ end -- cryptozoology
                 -- {id = 'j_oops'},
                 {id = 'j_baron', },
                 {id = 'j_mime', },
-                {id = 'j_cry_universum', },
+                -- {id = 'j_cry_universum', },
                 -- {id = 'j_madness', eternal = true},
                 {id = JOKER_MOD_PREFIX..'j_jimbow'},-- edition='phantom'},
                 {id = 'j_ceremonial', pinned = true},
@@ -5315,7 +5327,6 @@ end -- cryptozoology
             },
             vouchers = {
                 {id = MOD_PREFIX_V.. 'trash_picker'},
-                {id = MOD_PREFIX_V.. 'voucher_tycoon'},
                 {id = MOD_PREFIX_V.. '3d_boosters'},
                 {id = MOD_PREFIX_V.. '4d_boosters'},
                 {id = MOD_PREFIX_V.. 'eternity'},
@@ -5325,8 +5336,8 @@ end -- cryptozoology
                 -- {id = 'v_liquidation'},
                 {id = MOD_PREFIX_V.. 'overshopping'},
                 {id = MOD_PREFIX_V.. 'stow'},
-                {id = MOD_PREFIX_V.. 'cryptozoology'},
-                --{id = MOD_PREFIX_V.. 'chaos'},
+                {id = MOD_PREFIX_V.. 'real_random'},
+                {id = MOD_PREFIX_V.. 'chaos'},
                 {id = 'v_retcon'},
                 -- {id = 'v_event_horizon'},
             },
@@ -5346,6 +5357,26 @@ end -- cryptozoology
     end
     init_localization()
 end
+
+if AddLoopableVoucher then -- loop mod compatibility
+	AddLoopableVoucher('v_betm_vouchers_gold_coin')
+	AddLoopableVoucher('v_betm_vouchers_gold_bar')
+	AddLoopableVoucher('v_betm_vouchers_abstract_art')
+	AddLoopableVoucher('v_betm_vouchers_mondrian')
+	AddLoopableVoucher('v_betm_vouchers_voucher_bundle')
+	AddLoopableVoucher('v_betm_vouchers_voucher_bulk')
+	AddLoopableVoucher('v_betm_vouchers_scrawl')
+	AddLoopableVoucher('v_betm_vouchers_scribble')
+	AddLoopableVoucher('v_betm_vouchers_bonus_plus')
+	AddLoopableVoucher('v_betm_vouchers_mult_plus')
+	AddLoopableVoucher('v_betm_vouchers_cash_clutch')
+	AddLoopableVoucher('v_betm_vouchers_inflation')
+	-- AddLoopableVoucher('v_betm_vouchers_stow')
+	-- AddLoopableVoucher('v_betm_vouchers_stash')
+	AddLoopableVoucher('v_betm_vouchers_trash_picker')
+end
+
+
 if IN_SMOD1 then
     INIT()
 else
