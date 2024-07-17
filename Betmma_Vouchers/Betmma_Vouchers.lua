@@ -2906,6 +2906,7 @@ do
         end
         Card_apply_to_run_ref(self, center)
     end
+    -- debuff implementaion is in omnicard
 
 end -- stow
 do 
