@@ -9,6 +9,28 @@
 
 ----------------------------------------------
 ------------MOD CODE -------------------------
+-- WIP compat for non-ZH langs
+function CDLoc(now, need, tp, xargs)
+    local o
+    local v1 = now
+    local v2 = need
+    local v3 =
+        (tp == 'round' and '回合') or
+        (tp == 'ante' and '底注') or
+        (tp == 'hand' and now == 1 and '次出牌' or (tp == 'hand' and '次出牌')) or tp
+    if now == 0 then
+        o = {'可用！', '', ''}
+        else o = {v1, v2, v3 .. '后可用'}
+    end
+    if xargs and type(xargs) == "table" then
+        for _, v in ipairs(xargs) do
+            table.insert(o, v)
+        end
+        else table.insert(o, xargs)
+    end
+    return o
+end
+
 MOD_PREFIX='betm_abilities'
 USING_BETMMA_ABILITIES=true
 betm_abilities={}
@@ -399,9 +421,9 @@ SMODS.ConsumableType { -- Define Ability Consumable Type
     primary_colour = G.C.CHIPS,
     secondary_colour = mix_colours(G.C.SECONDARY_SET.Voucher, G.C.MULT, 0.9),
     loc_txt = {
-        collection = 'Abilities',
-        name = 'Ability',
-        label = 'Abililty'
+        collection = '技能',
+        name = '技能',
+        label = '技能'
     },
     shop_rate = 0.0,
     default = 'c_betm_abilities_philosophy',
@@ -524,12 +546,12 @@ do
     betm_abilities[key]=SMODS.Consumable { --GIL
         key = key,
         loc_txt = {
-            name = 'Global Interpreter Lock',
+            name = '全局解释器锁',
             text = {
-                'If all jokers are {C:attention}Eternal{}, remove',
-                '{C:attention}Eternal{} from all jokers. Otherwise,',
-                'set all jokers to be {C:attention}Eternal{}.',
-                'Cooldown: {C:mult}#1#/#2# #3# left{}'
+                '若所拥有的小丑牌均带有{C:attention}永恒',
+                '则移除所有{C:attention}永恒',
+                '否则，将所有小丑牌设为{C:attention}永恒',
+                '{C:mult}#1#{C:inactive}/{C:mult}#2#{C:inactive}#3#'
         }
         },
         set = 'Ability',
@@ -539,7 +561,7 @@ do
         discovered = true,
         cost = 6,
         loc_vars = function(self, info_queue, card)
-            return {vars = {card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type}}
+            return {vars = CDLoc(card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type)}
         end,
         keep_on_use = function(self,card)
             return true
@@ -567,12 +589,13 @@ do
     betm_abilities[key]=SMODS.Consumable { --glitched seed
         key = key,
         loc_txt = {
-            name = 'Glitched Seed',
+            name = '错乱种子',
             text = {
-                'Next #5# {C:attention}random events',
-                'are guaranteed success', 
-                '(#4# times left)',
-                'Cooldown: {C:mult}#1#/#2# #3# left{}'
+                '接下来的{C:attention}#5#{}次',
+                '{C:attention}随机判定事件',
+                '必定成功', 
+                '{C:inactive,s:0.8}（剩余{C:attention,s:0.8}#4#{C:inactive,s:0.8}次）',
+                '{C:mult}#1#{C:inactive}/{C:mult}#2#{C:inactive}#3#'
         }
         },
         set = 'Ability',
@@ -582,7 +605,7 @@ do
         discovered = true,
         cost = 6,
         loc_vars = function(self, info_queue, card)
-            return {vars = {card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type,pseudorandom_forced_0_count,card.ability.extra.value}}
+            return {vars = CDLoc(card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type,{pseudorandom_forced_0_count,card.ability.extra.value})}
         end,
         keep_on_use = function(self,card)
             return true
@@ -613,11 +636,12 @@ do
     betm_abilities[key]=SMODS.Consumable { --rank bump
         key = key,
         loc_txt = {
-            name = 'Rank Bump',
+            name = '升点',
             text = {
-                'Temporarily increase ranks of',
-                'chosen cards by 1 for this hand',
-                'Cooldown: {C:mult}#1#/#2# #3# left{}'
+                '在本次出牌中',
+                '将选定卡牌的点数',
+                '临时提升{C:attention}1',
+                '{C:mult}#1#{C:inactive}/{C:mult}#2#{C:inactive}#3#'
         }
         },
         set = 'Ability',
@@ -627,7 +651,7 @@ do
         discovered = true,
         cost = 6,
         loc_vars = function(self, info_queue, card)
-            return {vars = {card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type..'s',}}
+            return {vars = CDLoc(card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type)}
         end,
         keep_on_use = function(self,card)
             return true
@@ -707,13 +731,12 @@ do
     betm_abilities[key]=SMODS.Consumable { 
         key = key,
         loc_txt = {
-            name = 'Cached Hand',
+            name = '缓存一手',
             text = {
-                '{C:attention}Hand type{} of next hand is',
-                'set to the last hand',
-                'that is {C:attention}#4#',
-                '(#5# hands left)',
-                'Cooldown: {C:mult}#1#/#2# #3# left{}'
+                '将下一手出牌的{C:attention}牌型',
+                '设为与上一手出牌（{C:attention}#4#{}）相同',
+                '{C:inactive,s:0.8}（剩余{C:attention,s:0.8}#5#{C:inactive,s:0.8}次）',
+                '{C:mult}#1#{C:inactive}/{C:mult}#2#{C:inactive}#3#'
         }
         },
         set = 'Ability',
@@ -723,8 +746,8 @@ do
         discovered = true,
         cost = 6,
         loc_vars = function(self, info_queue, card)
-            return {vars = {card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type,
-            G.GAME.last_hand_played or 'High Card',(G.GAME.betmma_cached_hand or 0)}}
+            return {vars = CDLoc(card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type,
+            {G.GAME.last_hand_played or G.localization.poker_hands['High Card'],G.GAME.betmma_cached_hand or 0})}
         end,
         keep_on_use = function(self,card)
             return true
@@ -754,7 +777,7 @@ do
     function G.FUNCS.get_poker_hand_info(_cards)
         local text, loc_disp_text, poker_hands, scoring_hand, disp_text=G_FUNCS_get_poker_hand_info_ref(_cards)
         if G.GAME.betmma_cached_hand and G.GAME.betmma_cached_hand>0 then
-            text=G.GAME.last_hand_played or 'High Card'
+            text=G.GAME.last_hand_played or G.localization.poker_hands['High Card']
             loc_disp_text=localize(text, 'poker_hands')
         end
         return text, loc_disp_text, poker_hands, scoring_hand, disp_text
@@ -766,10 +789,10 @@ do
     betm_abilities[key]=SMODS.Consumable { 
         key = key,
         loc_txt = {
-            name = 'Heal',
+            name = '治愈术',
             text = {
-                "Undebuff selected cards",
-                'Cooldown: {C:mult}#1#/#2# #3# left{}'
+                "复原选定的失效牌",
+                '{C:mult}#1#{C:inactive}/{C:mult}#2#{C:inactive}#3#'
         }
         },
         set = 'Ability',
@@ -779,8 +802,7 @@ do
         discovered = true,
         cost = 6,
         loc_vars = function(self, info_queue, card)
-            return {vars = {card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type..'s',
-            }}
+            return {vars = CDLoc(card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type)}
         end,
         keep_on_use = function(self,card)
             return true
@@ -808,7 +830,7 @@ do
                 "{X:mult,C:white}X#4#{} for each hand reduced",
                 -- "Current Gain: {X:mult,C:white}X#5#{}",
                 "Current Xmult: {X:mult,C:white}X#5#{}",
-                'Cooldown: {C:mult}#1#/#2# #3# left{}'
+                '{C:mult}#1#{C:inactive}/{C:mult}#2#{C:inactive}#3#'
         }
         },
         set = 'Ability',
@@ -818,8 +840,8 @@ do
         discovered = true,
         cost = 6,
         loc_vars = function(self, info_queue, card)
-            return {vars = {card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type,
-            card.ability.extra.add,card.ability.extra.value}}
+            return {vars = CDLoc(card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type,
+            {card.ability.extra.add,card.ability.extra.value})}
         end,
         keep_on_use = function(self,card)
             return true
@@ -850,11 +872,11 @@ do
     betm_abilities[key]=SMODS.Consumable { 
         key = key,
         loc_txt = {
-            name = 'Double Lift',
+            name = '双重翻牌',
             text = {
-                "Choose {C:attention}#4#{} more card",
-                "in current pack",
-                'Cooldown: {C:mult}#1#/#2# #3# left{}'
+                "使当前补充包的",
+                "可选数量{C:attention}+#4#",
+                '{C:mult}#1#{C:inactive}/{C:mult}#2#{C:inactive}#3#'
         }
         },
         set = 'Ability',
@@ -864,8 +886,8 @@ do
         discovered = true,
         cost = 6,
         loc_vars = function(self, info_queue, card)
-            return {vars = {card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type,
-            card.ability.extra.value}}
+            return {vars = CDLoc(card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type,
+            card.ability.extra.value)}
         end,
         keep_on_use = function(self,card)
             return true
@@ -891,7 +913,7 @@ do
                 '{C:green}#4#%{} chance to create a', 
                 '{C:legendary,E:1}Legendary{} Joker, otherwise',
                 'create a {C:legendary,E:1}Legendary{} Voucher',
-                'Cooldown: {C:mult}#1#/#2# #3# left{}'
+                '{C:mult}#1#{C:inactive}/{C:mult}#2#{C:inactive}#3#'
         }
         },
         set = 'Ability',
@@ -901,8 +923,8 @@ do
         discovered = true,
         cost = 20,
         loc_vars = function(self, info_queue, card)
-            return {vars = {card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type..'s',
-            card.ability.extra.chance}}
+            return {vars = CDLoc(card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type,
+            card.ability.extra.chance)}
         end,
         keep_on_use = function(self,card)
             return true
@@ -949,11 +971,11 @@ do
     betm_abilities[key]=SMODS.Consumable { 
         key = key,
         loc_txt = {
-            name = 'Rental Slot',
+            name = '出租槽位',
             text = {
-                "{C:dark_edition}+#1#{} Joker Slot. Lose",
-                "{C:money}$#2#{} after each round",
-                '{C:blue}Passive{}'
+                "小丑牌槽位{C:dark_edition}+#1#",
+                "每回合后失去{C:money}$#2#",
+                '{C:blue}被动'
         }
         },
         set = 'Ability',
@@ -1010,10 +1032,10 @@ do
     betm_abilities[key]=SMODS.Consumable { 
         key = key,
         loc_txt = {
-            name = 'Philosophy',
+            name = '我在思考',
             text = {
-                "{C:attention}+#1#{} Ability Slot",
-                '{C:blue}Passive{}'
+                "技能槽位{C:attention}+#1#",
+                '{C:blue}被动'
         }
         },
         set = 'Ability',
@@ -1054,11 +1076,11 @@ do
     betm_abilities[key]=SMODS.Consumable { 
         key = key,
         loc_txt = {
-            name = 'Midas Touch',
+            name = '一触成金',
             text = {
-                "Gain {C:money}$#1#{} when",
-                "using an ability",
-                '{C:blue}Passive{}'
+                '施放技能时',
+                '获得{C:money}$#1#',
+                '{C:blue}被动'
         }
         },
         set = 'Ability',
