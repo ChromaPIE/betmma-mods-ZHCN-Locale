@@ -20,7 +20,7 @@ function CDLoc(now, need, tp, xargs)
         (tp == 'hand' and now == 1 and '次出牌' or (tp == 'hand' and '次出牌')) or tp
     if now == 0 then
         o = {'可用！', '', ''}
-        else o = {v1, v2, v3 .. '后可用'}
+        else o = {v1 .. '/', v2, v3 .. '后可用'}
     end
     if xargs and type(xargs) == "table" then
         for _, v in ipairs(xargs) do
@@ -563,7 +563,7 @@ do
                 '若所拥有的小丑牌均带有{C:attention}永恒',
                 '则移除所有{C:attention}永恒',
                 '否则，将所有小丑牌设为{C:attention}永恒',
-                '{C:mult}#1#{C:inactive}/{C:mult}#2#{C:inactive}#3#'
+                '{C:mult}#1##2#{}#3#'
         }
         },
         set = 'Ability',
@@ -607,7 +607,7 @@ do
                 '{C:attention}随机判定事件',
                 '必定成功', 
                 '{C:inactive,s:0.8}（剩余{C:attention,s:0.8}#4#{C:inactive,s:0.8}次）',
-                '{C:mult}#1#{C:inactive}/{C:mult}#2#{C:inactive}#3#'
+                '{C:mult}#1##2#{}#3#'
         }
         },
         set = 'Ability',
@@ -653,7 +653,7 @@ do
                 '在本次出牌中',
                 '将选定卡牌的点数',
                 '临时提升{C:attention}1',
-                '{C:mult}#1#{C:inactive}/{C:mult}#2#{C:inactive}#3#'
+                '{C:mult}#1##2#{}#3#'
         }
         },
         set = 'Ability',
@@ -748,7 +748,7 @@ do
                 '将下一手出牌的{C:attention}牌型',
                 '设为与上一手出牌（{C:attention}#4#{}）相同',
                 '{C:inactive,s:0.8}（剩余{C:attention,s:0.8}#5#{C:inactive,s:0.8}次）',
-                '{C:mult}#1#{C:inactive}/{C:mult}#2#{C:inactive}#3#'
+                '{C:mult}#1##2#{}#3#'
         }
         },
         set = 'Ability',
@@ -804,7 +804,7 @@ do
             name = '治愈术',
             text = {
                 "复原选定的失效牌",
-                '{C:mult}#1#{C:inactive}/{C:mult}#2#{C:inactive}#3#'
+                '{C:mult}#1##2#{}#3#'
         }
         },
         set = 'Ability',
@@ -842,7 +842,7 @@ do
                 "{X:mult,C:white}X#4#{} for each hand reduced",
                 -- "Current Gain: {X:mult,C:white}X#5#{}",
                 "Current Xmult: {X:mult,C:white}X#5#{}",
-                '{C:mult}#1#{C:inactive}/{C:mult}#2#{C:inactive}#3#'
+                '{C:mult}#1##2#{}#3#'
         }
         },
         set = 'Ability',
@@ -888,7 +888,7 @@ do
             text = {
                 "使当前补充包的",
                 "可选数量{C:attention}+#4#",
-                '{C:mult}#1#{C:inactive}/{C:mult}#2#{C:inactive}#3#'
+                '{C:mult}#1##2#{}#3#'
         }
         },
         set = 'Ability',
@@ -965,7 +965,7 @@ do
                 '{C:green}#4#%{} chance to create a', 
                 '{C:legendary,E:1}Legendary{} Joker, otherwise',
                 'create a {C:legendary,E:1}Legendary{} Voucher',
-                '{C:mult}#1#{C:inactive}/{C:mult}#2#{C:inactive}#3#'
+                '{C:mult}#1##2#{}#3#'
         }
         },
         set = 'Ability',
