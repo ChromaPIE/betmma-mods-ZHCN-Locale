@@ -117,7 +117,6 @@ local localization = {
             "随机获取一张{C:attention}奖券",
             "（每个底注限一次）",
             "{C:inactive}（#1#）"
-            -- dollar in it adds to its sold price
         }
     },
     jimbow = {

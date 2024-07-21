@@ -251,6 +251,13 @@ function SMODS.current_mod.process_loc_text()
     end
     G.localization.descriptions.Enhanced.ellipsis={text={'{C:inactive}（已省略#1#项能力）'}}
     G.localization.descriptions.Enhanced.multiples={text={'{C:inactive}（X#1#）'}}
+    -- borrowed from SDM0
+    G.localization.descriptions.Other.perishable_no_debuff = {
+        name = "易腐",
+        text = {
+            "{C:attention}#1#{}回合后失效"
+        }
+    }
     for k, v in pairs(betmma_extra_data) do
         for k2, v2 in pairs(v) do
             G.localization.misc[k][k2]=v2
@@ -499,30 +506,12 @@ do
         if saveTable then -- without this, vouchers given at the start of the run (in challenge) will be calculated twice
             if used_voucher('bonus_plus') then
                 G.P_CENTERS.m_bonus.config.bonus=G.P_CENTERS.m_bonus.config.bonus+get_voucher('bonus_plus').config.extra
-                for k, v in pairs(G.playing_cards) do
-                    if v.config.center_key == 'm_bonus' then v:set_ability(G.P_CENTERS['m_bonus']) end
-                end
             end
             if used_voucher('mult_plus') then
                 G.P_CENTERS.m_mult.config.mult=G.P_CENTERS.m_mult.config.mult+get_voucher('mult_plus').config.extra
-                for k, v in pairs(G.playing_cards) do
-                    if v.config.center_key == 'm_mult' then v:set_ability(G.P_CENTERS['m_mult']) end
-                end
             end
             if used_voucher('slate') then
                 G.P_CENTERS.m_stone.config.bonus=G.P_CENTERS.m_stone.config.bonus+get_voucher('slate').config.extra
-                for k, v in pairs(G.playing_cards) do
-                    if v.config.center_key == 'm_stone' then v:set_ability(G.P_CENTERS['m_stone']) end
-                end
-            end
-            if used_voucher('bulletproof') then
-                for k, v in pairs(G.playing_cards) do
-                    if v.config.center_key == 'm_glass' and v.config.center.config.Xmult~=v.ability.x_mult then 
-                        v.config.center=copy_table(v.config.center)
-                        v.config.center.config.Xmult=v.ability.x_mult
-                        -- if the x_mult has been decreased, change the number on hover UI from m_glass value to x_mult
-                    end
-                end
             end
             
             if used_voucher('real_random') then
@@ -716,7 +705,7 @@ do
     local oversupply_loc_txt = {
         name = "供应过量",
         text = {
-            "击败Boss盲注后",
+            "击败{C:attention}Boss盲注{}后",
             "获得{C:attention}1{}个{C:attention}奖券标签"
         }
     }
@@ -740,7 +729,7 @@ do
     local oversupply_plus_loc_txt = {
         name = "货源滚滚",
         text = {
-            "击败每个盲注后",
+            "击败每个{C:attention}盲注{}后",
             "获得{C:attention}1{}个{C:attention}奖券标签",
             "{C:inactive}（不与{C:attention}供应过量{C:inactive}叠加）"
             -- if you have both, after beating boss blind you gain only 1 voucher tag
@@ -1050,7 +1039,7 @@ do
         text = {
             "购买本奖券后",
             "即刻生成一张{C:spectral}黑洞",
-            "使用星球牌时有{C:green}#1#/#2#{}的几率",
+            "使用{C:planet}星球牌{}时有{C:green}#1#/#2#{}的几率",
             "生成一张{C:spectral}黑洞",
             "{C:inactive}（必须有空位）"
         }
@@ -1107,7 +1096,7 @@ do
     G.FUNCS.use_card =function(e, mute, nosave)
         local card = e.config.ref_table
         if card.ability.consumeable then
-            if (card.ability.set == 'Planet' or card.ability.set == "Planet_dx") and used_voucher('engulfer') and pseudorandom('engulfer') < G.GAME.probabilities.normal/get_voucher('engulfer').config.extra then
+            if card.ability.set == 'Planet' and used_voucher('engulfer') and pseudorandom('engulfer') < G.GAME.probabilities.normal/get_voucher('engulfer').config.extra then
                 create_black_hole(localize("k_engulfer_generate"))
             end
         end
@@ -1229,7 +1218,7 @@ do
     local loc_txt = {
         name = name,
         text = {
-            "Gives {C:attention}#1#{} random vouchers"
+            "Redeem {C:attention}#1#{} random vouchers"
         }
     }
     local this_v = SMODS.Voucher{
@@ -1318,7 +1307,8 @@ do
     local loc_txt = {
         name = "大步流星",
         text = {
-            "跳过盲注时获得{C:money}$#1#"
+            "跳过{C:attention}盲注{}时",
+            "获得{C:money}$#1#"
         }
     }
     local this_v = SMODS.Voucher{
@@ -1339,7 +1329,8 @@ do
     local loc_txt = {
         name = "乘风破浪",
         text = {
-            "跳过盲注时获得一个{C:attention}双倍标签"
+            "跳过{C:attention}盲注{}时",
+            "获得一个{C:attention}双倍标签"
         }
     }
     local this_v = SMODS.Voucher{
@@ -1397,7 +1388,7 @@ do
     local loc_txt = {
         name = "胡写乱画",
         text = {
-            "随机生成{C:attention}#1#{}张",
+            "生成{C:attention}#1#{}张",
             "{C:dark_edition}负片{C:spectral}幻灵牌"
         }
     }
@@ -1624,11 +1615,11 @@ do
         name = "瞬间爆炸",
         text = {
             "若回合结束时的得分",
-            "为最低要求的{X:mult,C:white}#1#倍{}或更高",
+            "为最低要求的{C:attention}#1#倍{}或更高",
             "为随机一张{C:attention}小丑牌添加{C:dark_edition}负片",
-            "并提升上述倍数要求",
-            "{C:inactive}（本奖券提供的负片",
-            "{C:inactive}可覆盖小丑牌的原有版本）"
+            "并使上述倍数要求{C:attention}翻倍",
+            "{C:inactive,s:0.8}本奖券提供的负片",
+            "{C:inactive,s:0.8}可覆盖小丑牌的原有版本"
         }
     }
     local this_v = SMODS.Voucher{
@@ -1641,7 +1632,10 @@ do
     this_v.loc_vars = function(self, info_queue, center)
         if not center then center={ability=this_v.config} end
         local count=G and G.GAME and G.GAME.v_big_blast_count or 0
-        return {vars={center.ability.extra.multiplier*center.ability.extra.increase^(count*(count+1))}}
+        return {vars={
+            center.ability.extra.multiplier*center.ability.extra.increase^(count*(count+1)),
+            center.ability.extra.increase^(2*(count+1))
+        }}
     end
     handle_register(this_v)
     local v_big_blast=this_v
@@ -1727,7 +1721,7 @@ do
         name = "四维堆叠",
         text = {
             "重掷会对{C:attention}补充包{}生效",
-            "但会使新的补充包价格上涨{C:attention}$#1#"
+            "但会使新的{C:attention}补充包{}价格上涨{C:attention}$#1#"
         }
     }
     local this_v = SMODS.Voucher{
@@ -1963,7 +1957,7 @@ do
             "若拥有资金多于{C:money}$#1#/(兑换奖券数 + 1)",
             "{C:inactive}（现为{C:money}$#2#{C:inactive}）",
             "兑换奖券时将赠送{C:dark_edition}反物质",
-            "并使上述资金需求{C:red}X#3#"
+            "并使上述资金需求{C:attention}X#3#"
             
         }
     }
@@ -2302,7 +2296,7 @@ do
         text = {
             "{C:blue}奖励牌{}的筹码加成",
             "永久{C:blue}+#1#",
-            "{C:inactive}（例如：+30 -> +#2#）"
+            "{C:inactive}（+30 -> +#2#）"
         }
     }
     local this_v = SMODS.Voucher{
@@ -2324,7 +2318,7 @@ do
         text = {
             "{C:red}倍率牌{}的倍率加成",
             "永久{C:red}+#1#",
-            "{C:inactive}（例如：+4 -> +#2#）"
+            "{C:inactive}（+4 -> +#2#）"
         }
     }
     local this_v = SMODS.Voucher{
@@ -2348,14 +2342,18 @@ do
         if center_table.name == 'Bonus+' then
             G.P_CENTERS.m_bonus.config.bonus=G.P_CENTERS.m_bonus.config.bonus+get_voucher('bonus_plus').config.extra
             for k, v in pairs(G.playing_cards) do
-                if v.config.center_key == 'm_bonus' then v:set_ability(G.P_CENTERS['m_bonus']) end
+                if v.config.center_key == 'm_bonus' then
+                    v.ability.bonus = v.ability.bonus + get_voucher('bonus_plus').config.extra
+                end
             end
         
         end
         if center_table.name == 'Mult+' then
             G.P_CENTERS.m_mult.config.mult=G.P_CENTERS.m_mult.config.mult+get_voucher('mult_plus').config.extra
             for k, v in pairs(G.playing_cards) do
-                if v.config.center_key == 'm_mult' then v:set_ability(G.P_CENTERS['m_mult']) end
+                if v.config.center_key == 'm_mult' then 
+                    v.ability.mult = v.ability.mult + get_voucher('mult_plus').config.extra
+                end
             end
         end
         Card_apply_to_run_ref(self, center)
@@ -2420,10 +2418,8 @@ do
     local Card_set_debuff=Card.set_debuff
     function Card:set_debuff(should_debuff)
         if used_voucher('omnicard') and self.config and self.config.center_key=='m_wild' then
-            should_debuff=false
-            if self.params.debuff_by_curse then -- DX tarots mod curses that still debuff when should_debuff is false
-                self.params.debuff_by_curse=false
-            end
+            self.debuff = false
+            return
         end
         if self.area == G.jokers and is_hidden(self) then
             should_debuff = true
@@ -2463,8 +2459,6 @@ do
             self.ability.breaking_count=(self.ability.breaking_count or 0)+1
             self.ability.x_mult=self.ability.x_mult-get_voucher('bulletproof').config.extra.lose
             --print(G.P_CENTERS.m_glass.config.Xmult,self.ability.x_mult)
-            self.config.center=copy_table(self.config.center) -- prevent modifying value of G.P_CENTERS.m_glass
-            self.config.center.config.Xmult=self.ability.x_mult--self.config.center.config.Xmult-get_voucher('bulletproof').config.extra.lose
             self.shattered=false
             self.destroyed=false
             card_eval_status_text(self,'extra',nil,nil,nil,{message=localize('k_bulletproof')})
@@ -2595,7 +2589,6 @@ do
         name = "亘古永恒",
         text = {
             "商店中可能出现{C:attention}永恒{}小丑",
-            "{C:inactive,s:0.8}（不可售出，无法摧毁）",
             "{C:attention}永恒{}小丑有{C:green}#1#%{}的几率",
             "同时拥有{C:dark_edition}负片",
             "{C:inactive}（上述几率无法倍增）"
@@ -2609,6 +2602,9 @@ do
     }
     handle_atlas(id,this_v)
     this_v.loc_vars = function(self, info_queue, center)
+        if IN_SMOD1 then
+            table.insert(info_queue, {key = 'eternal', set = 'Other'})
+        end
         return {vars={100/center.ability.extra}}
     end
     handle_register(this_v)
@@ -2619,7 +2615,6 @@ do
         name = "半衰期",
         text = {
             "商店中会出现{C:attention}易腐{}小丑",
-            "{C:inactive,s:0.8}（5回合后失效）",
             "{C:attention}易腐{}小丑牌仅占{C:attention}#1#{}个槽位"
         }
     }
@@ -2631,6 +2626,9 @@ do
     }
     handle_atlas(id,this_v)
     this_v.loc_vars = function(self, info_queue, center)
+        if IN_SMOD1 then
+            table.insert(info_queue, {key = 'perishable_no_debuff', set = 'Other', vars = {G.GAME.perishable_rounds}})
+        end
         return {vars={center.ability.extra}}
     end
     handle_register(this_v)
@@ -2714,7 +2712,7 @@ do
         name = "债多压身",
         text = {
             "商店中可能出现{C:attention}出租{}小丑牌",
-            "{C:attention,s:0.8}（回合结束时{C:inactive,s:0.8}若{C:attention,s:0.8}未负债{C:inactive,s:0.8}，扣减{C:money,s:0.8}$3{C:inactive,s:0.8}）",
+            "负债时，{C:attention}出租{}小丑牌不会扣减资金",
             "每张{C:attention}出租{}小丑牌",
             "可使负债上限提升{C:red}$#1#"
         }
@@ -2727,6 +2725,9 @@ do
     }
     handle_atlas(id,this_v)
     this_v.loc_vars = function(self, info_queue, center)
+        if IN_SMOD1 then
+            table.insert(info_queue, {key = 'rental', set = 'Other', vars = {G.GAME.rental_rate or 1}})
+        end
         return {vars={center.ability.extra}}
     end
     handle_register(this_v)
@@ -2737,10 +2738,8 @@ do
         name = "铁丝发夹",
         text = {
             "商店中可能出现{C:attention}左极固定{}小丑牌",
-            "{C:inactive,s:0.8}（强制固定于最左侧，不可移动）",
             "每张{C:attention}左极固定{}小丑牌",
-            "在{C:attention}自身触发前{}拥有",
-            "其{C:attention}右侧{}小丑牌的能力"
+            "将复制其{C:attention}右侧{}小丑牌的能力"
         }
     }
     local this_v = SMODS.Voucher{
@@ -2751,6 +2750,9 @@ do
     }
     handle_atlas(id,this_v)
     this_v.loc_vars = function(self, info_queue, center)
+        if IN_SMOD1 then
+            table.insert(info_queue, {key = 'pinned_left', set = 'Other'})
+        end
         return {vars={}}
     end
     handle_register(this_v)
@@ -2927,6 +2929,9 @@ do
     }
     handle_atlas(id,this_v)
     this_v.loc_vars = function(self, info_queue, center)
+        if IN_SMOD1 then
+            table.insert(info_queue, G.P_CENTERS['e_phantom'])
+        end
         return {vars={center.ability.extra}}
     end
     handle_register(this_v)
@@ -2948,6 +2953,9 @@ do
     }
     handle_atlas(id,this_v)
     this_v.loc_vars = function(self, info_queue, center)
+        if IN_SMOD1 then
+            table.insert(info_queue, G.P_CENTERS['e_phantom'])
+        end
         return {vars={center.ability.extra}}
     end
     handle_register(this_v)
@@ -2982,7 +2990,7 @@ do
     local loc_txt = {
         name = "清仓处理",
         text = {
-            "每个商店内的第一个补充包",
+            "商店内的第一个补充包",
             "均为{C:attention}免费"
         }
     }
@@ -3368,7 +3376,7 @@ do
         name = "双行星系统",
         text = {
             "购买{C:planet}星球牌{}时",
-            "随机生成一张星球牌",
+            "随机生成一张{C:planet}星球牌",
             "{C:inactive}（必须有空间）",
             "{C:inactive}（星球牌商人 + 第二张半价）"
         }
@@ -3389,7 +3397,7 @@ do
     G.FUNCS.buy_from_shop = function(e)
         local c1 = e.config.ref_table
         local ret=G_FUNCS_buy_from_shop_ref(e)
-        if c1.ability.consumeable and (c1.config.center.set == 'Planet' or c1.config.center.set =="Planet_dx") and ret~=false and used_voucher('double_planet') and #G.consumeables.cards + G.GAME.consumeable_buffer + (e.config.id ~= 'buy_and_use' and 1 or 0) < G.consumeables.config.card_limit then -- "Planet_dx" is for deluxe consumable mod, (e.config.id ~= 'buy_and_use' and 1 or 0) is because buy_from_shop adds a card in an event that is executed after this code if the button is "buy" not "buy_and_use"
+        if c1.ability.consumeable and (c1.config.center.set == 'Planet') and ret~=false and used_voucher('double_planet') and #G.consumeables.cards + G.GAME.consumeable_buffer + (e.config.id ~= 'buy_and_use' and 1 or 0) < G.consumeables.config.card_limit then -- (e.config.id ~= 'buy_and_use' and 1 or 0) is because buy_from_shop adds a card in an event that is executed after this code if the button is "buy" not "buy_and_use"
             randomly_create_planet('v_double_planet','Double Planet!',nil)
         end
     end
@@ -3612,7 +3620,9 @@ do
         if center_table.name == 'Slate' then
             G.P_CENTERS.m_stone.config.bonus=G.P_CENTERS.m_stone.config.bonus+get_voucher('slate').config.extra
             for k, v in pairs(G.playing_cards) do
-                if v.config.center_key == 'm_stone' then v:set_ability(G.P_CENTERS['m_stone']) end
+                if v.config.center_key == 'm_stone' then
+                    v.ability.bonus = v.ability.bonus + get_voucher('slate').config.extra
+                end
             end
         end
         Card_apply_to_run_ref(self, center)
@@ -3782,7 +3792,7 @@ do
         name = "真随机",
         text = {
             "使{C:attention}幸运牌{}的效果随机化",
-            "盲注开始时生成一张{C:dark_edition}负片{C:attention}魔术师",
+            "盲注开局时生成一张{C:dark_edition}负片{C:attention}魔术师",
             "{C:inactive}（水晶球 + 全能卡）"
         }
     }
@@ -4675,7 +4685,7 @@ do
             trigger = 'after',
             delay =  0,
             func = function() 
-                local hand_space = math.min(#G.deck.cards, #G.hand.cards)
+                local hand_space = math.min(#G.deck.cards, G.hand.config.card_limit)
                 
                 for i=1, hand_space do --draw cards from deckL
                     draw_card(G.deck,G.hand, i*100/hand_space,'up',true)
@@ -4781,6 +4791,10 @@ do
     }
     handle_atlas(id,this_v)
     this_v.loc_vars = function(self, info_queue, center)
+        if IN_SMOD1 then
+            table.insert(info_queue, {key = 'eternal', set = 'Other'})
+            table.insert(info_queue, {key = 'perishable_no_debuff', set = 'Other', vars = {G.GAME.perishable_rounds}})
+        end
         return {vars={center.ability.extra}}
     end
     handle_register(this_v)
@@ -4862,8 +4876,8 @@ do
     local loc_txt = {
         name = "太阳系",
         text = {
-            "每拥有一张星球牌",
-            "（包含正在结算的星球牌）",
+            "每拥有一张{C:planet}星球牌",
+            "（包含正在结算的）",
             "使用的{C:planet}星球牌{}可重新触发一次",
             "{C:inactive}（星球牌商人 + 事件视界）"
         }
@@ -4881,7 +4895,7 @@ do
     handle_register(this_v)
 
     local function is_planet(card)
-        return card.ability and card.ability.consumeable and (card.ability.consumeable.hand_type or card.ability.consumeable.hand_types) -- hand_types is for cryptid planets
+        return card.ability and card.ability.set == 'Planet'
     end
 
     local update_hand_text_ref=update_hand_text
@@ -4890,19 +4904,6 @@ do
             config.delay=(config.delay or 0.8)/(1+G.betmma_solar_system_times)
         end
         update_hand_text_ref(config,vals)
-    end
-
-    local level_up_hand_ref=level_up_hand
-    function level_up_hand(card,hand,instant,amount)
-        -- TarotDX forgot to add the second level for DX planets when instant is true LOL
-            amount = amount or 1
-            if instant and card and card.ability and card.ability.set and card.ability.set == "Planet_dx" then    
-                G.GAME.hands[hand].level = math.max(0, G.GAME.hands[hand].level + amount)
-                G.GAME.hands[hand].mult = math.max(G.GAME.hands[hand].mult + G.GAME.hands[hand].l_mult*(amount), 1)
-                G.GAME.hands[hand].chips = math.max(G.GAME.hands[hand].chips + G.GAME.hands[hand].l_chips*(amount), 0)
-            end
-        
-        level_up_hand_ref(card,hand,instant,amount)
     end
 
     local level_up_hand_ref=level_up_hand
@@ -5169,8 +5170,8 @@ do
     local loc_txt = {
         name = name,
         text = {
-            "{C:attention}Jokers{} bought directly have {C:dark_edition}#1#%{}",
-            "chance to have {C:attention}Tentacle{} edition",
+            "Bought {C:attention}Jokers{} have a {C:dark_edition}#1#%{}",
+            "chance to have {C:dark_edition}Tentacle{} edition added",
             "{C:inactive}(Crystal Ball + Undying){}"
         }
     }
@@ -5182,6 +5183,9 @@ do
     }
     handle_atlas(id,this_v)
     this_v.loc_vars = function(self, info_queue, center)
+        if IN_SMOD1 then
+            table.insert(info_queue, G.P_CENTERS['e_tentacle'])
+        end
         return {vars={center.ability.extra}}
     end
     handle_register(this_v)
@@ -5302,15 +5306,7 @@ end -- cryptozoology
                 -- {id = 'c_cryptid'},
                 --{id = 'c_devil_cu'},
                 -- {id = 'c_death'},
-                {id='c_pluto',negative=true},
-                {id='c_pluto',negative=true},
-                {id='c_pluto',negative=true},
-                {id='c_pluto',negative=true},
-                {id='c_pluto',negative=true},
-                {id='c_pluto',negative=true},
-                {id='c_pluto',negative=true},
-                {id='c_pluto',negative=true},
-                {id='c_pluto',negative=true},
+                {id='c_hanged_man',negative=true},
             },
             vouchers = {
                 {id = MOD_PREFIX_V.. 'trash_picker'},
@@ -5324,7 +5320,7 @@ end -- cryptozoology
                 {id = MOD_PREFIX_V.. 'overshopping'},
                 {id = MOD_PREFIX_V.. 'stow'},
                 {id = MOD_PREFIX_V.. 'bargain_aisle'},
-                {id = MOD_PREFIX_V.. 'clearance_aisle'},
+                {id = MOD_PREFIX_V.. 'recycle_area'},
                 {id = 'v_retcon'},
                 -- {id = 'v_event_horizon'},
             },
