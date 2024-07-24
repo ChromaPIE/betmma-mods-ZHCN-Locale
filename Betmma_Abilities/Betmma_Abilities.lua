@@ -4,7 +4,7 @@
 --- MOD_AUTHOR: [Betmma]
 --- MOD_DESCRIPTION: New type of card: Abilities
 --- PREFIX: betm_abilities
---- VERSION: 1.0.2(20240721)
+--- VERSION: 1.0.2.1(20240722)
 --- BADGE_COLOUR: 8D90BF
 
 ----------------------------------------------
@@ -31,7 +31,9 @@ function CDLoc(now, need, tp, xargs)
     return o
 end
 
---[[ todo: compatibility with hammerspace]]
+--[[ todo: compatibility with hammerspace (CCD) or in consumable slots
+current progress: abilities are able to cooldown in everywhere, but passive calculations (using calculate function) don't work in other areas. Active abilities can work.
+]]
 MOD_PREFIX='betm_abilities'
 USING_BETMMA_ABILITIES=true
 betm_abilities={}
@@ -356,7 +358,7 @@ do
 
     local Card_draw_ref=Card.draw
     function Card:draw(layer)
-        if self.ability.set=='Ability' and self.area==G.betmma_abilities and not ability_cooled_down(self) then
+        if self.ability.set=='Ability' and self.area~=G.shop_abilities and self.area~=G.shop_jokers and not ability_cooled_down(self) then --and self.area==G.betmma_abilities
             Card_draw_ref(self,layer)
             local _send=self.ARGS.send_to_shader
             _send={betmma=true,extra={{name='percentage',val=ability_cooled_down_percentage(self)}},vanilla=_send}
@@ -377,21 +379,28 @@ do
 end -- Cooldown shader
 
 do
-    function update_ability_cooldown(type,value)
-        if value==nil then value=1 end
-        if G.betmma_abilities==nil then
-            print("G.betmma_abilities doesn't exist! Maybe ability.toml isn't installed correctly.")
-            return
-        end
-        for i = 1,#G.betmma_abilities.cards do
-            local card=G.betmma_abilities.cards[i]
-            if card.ability.cooldown.type==type then
+    function update_ability_cooldown_single_area(cardarea,type,value)
+        if cardarea==nil or cardarea.cards==nil then return end
+        for i=1,#cardarea.cards do
+            local card=cardarea.cards[i]
+            if card.ability and card.ability.cooldown and card.ability.cooldown.type==type then
                 card.ability.cooldown.now=card.ability.cooldown.now-value
                 if card.ability.cooldown.now<0 then
                     card.ability.cooldown.now=0
                 end
             end
         end
+    end
+    function update_ability_cooldown(type,value)
+        if value==nil then value=1 end
+        if G.betmma_abilities==nil then
+            print("G.betmma_abilities doesn't exist! Maybe ability.toml isn't installed correctly.")
+            return
+        end
+        update_ability_cooldown_single_area(G.betmma_abilities,type,value)
+        update_ability_cooldown_single_area(G.jokers,type,value)
+        update_ability_cooldown_single_area(G.consumeables,type,value)
+        update_ability_cooldown_single_area(G.deck,type,value)
     end
 
     local ease_ante_ref=ease_ante
@@ -429,6 +438,7 @@ do
     local G_FUNCS_play_cards_from_highlighted_ref=G.FUNCS.play_cards_from_highlighted
     -- update 'hand' cooldown
     G.FUNCS.play_cards_from_highlighted=function(e)
+        G.thumb_triggered=false -- thumb can only trigger once
         update_ability_cooldown('hand')
         local ret= G_FUNCS_play_cards_from_highlighted_ref(e)
         return ret
@@ -837,7 +847,7 @@ do
             
         end
     }
-end --heal
+end --heal (need fix if it's redebuffed, maybe change it to not be able to be debuffed for this hand)
 do
     local key='absorber'
     get_atlas(key)
@@ -1302,6 +1312,47 @@ do
         end
     }
 end --midas touch
+do
+    local key='thumb'
+    get_atlas(key)
+    betm_abilities[key]=SMODS.Consumable { 
+        key = key,
+        loc_txt = {
+            name = 'Thumb',
+            text = {
+                "If played hand has less then 5 cards,", 
+                "{C:attention}+#1#{} hands per card below {C:attention}5",
+                "(Can only trigger once per hand)",
+                '{C:blue}Passive{}'
+        }
+        },
+        set = 'Ability',
+        pos = {x = 0,y = 0}, 
+        atlas = key, 
+        config = {extra = {value=0.2},cooldown={type='passive'}, },
+        discovered = true,
+        cost = 6,
+        loc_vars = function(self, info_queue, card)
+            return {vars = {
+            card.ability.extra.value}}
+        end,
+        keep_on_use = function(self,card)
+            return true
+        end,
+        can_use = function(self,card)
+            return false
+        end,
+        calculate=function(self,card,context)
+            if context.joker_main and not G.thumb_triggered then
+                local card_count=#G.play.cards
+                if card_count<5 then
+                    G.thumb_triggered=true
+                    ease_hands_played(card.ability.extra.value*(5-card_count))
+                end
+            end
+        end
+    }
+end --thumb
 
 for k,v in pairs(betm_abilities) do
     v.config.extra.local_d6_sides="cryptid compat to prevent it reset my config upon use ;( ;("

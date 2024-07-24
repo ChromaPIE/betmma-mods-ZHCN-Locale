@@ -2,9 +2,9 @@
 --- MOD_NAME: Betmma Vouchers
 --- MOD_ID: BetmmaVouchers
 --- MOD_AUTHOR: [Betmma]
---- MOD_DESCRIPTION: 48 Vouchers and 23 Fusion Vouchers! v2.2.0-alpha
+--- MOD_DESCRIPTION: 48 Vouchers and 24 Fusion Vouchers! v2.2.0
 --- PREFIX: betm_vouchers
---- VERSION: 2.2.0-alpha(20240717)
+--- VERSION: 2.2.0.1(20240723)
 --- BADGE_COLOUR: ED40BF
 --- PRIORITY: -1
 
@@ -124,6 +124,7 @@ config = {
     v_forbidden_area=true,
     v_voucher_tycoon=true,
     v_cryptozoology=true,
+    v_reroll_aisle=true
 }
 if not IN_SMOD1 then
     config.v_undying=false
@@ -3357,15 +3358,15 @@ do
     handle_register(this_v)
 
     local poll_edition_ref=poll_edition
-    function poll_edition(_key, _mod, _no_neg, _guaranteed)
+    function poll_edition(_key, _mod, _no_neg, _guaranteed, _options)
         _mod=_mod or 1
         if used_voucher('darkness') then
-            local ret=poll_edition_ref(_key, _mod*(get_voucher('darkness').config.extra-1), _no_neg, _guaranteed)
+            local ret=poll_edition_ref(_key, _mod*(get_voucher('darkness').config.extra-1), _no_neg, _guaranteed, _options)
             if ret and ret.negative then
                 return ret
             end
         end
-        return poll_edition_ref(_key, _mod, _no_neg, _guaranteed)
+        return poll_edition_ref(_key, _mod, _no_neg, _guaranteed, _options)
     end
 
 end -- darkness
@@ -5170,8 +5171,8 @@ do
     local loc_txt = {
         name = name,
         text = {
-            "Bought {C:attention}Jokers{} have a {C:dark_edition}#1#%{}",
-            "chance to have {C:dark_edition}Tentacle{} edition added",
+            "Bought {C:attention}Jokers{} have a {C:dark_edition}#1#%{} chance",
+            "to have {C:dark_edition}Tentacle{} edition added",
             "{C:inactive}(Crystal Ball + Undying){}"
         }
     }
@@ -5195,7 +5196,7 @@ do
         local c1 = e.config.ref_table
         local ret=G_FUNCS_buy_from_shop_ref(e)
         
-        if c1.ability.set == 'Joker' and used_voucher('cryptozoology') and pseudorandom('cryptozoology')*100 < get_voucher('cryptozoology').config.extra then -- buying a joker
+        if c1.ability.set == 'Joker' and G.FUNCS.check_for_buy_space(c1) and used_voucher('cryptozoology') and pseudorandom('cryptozoology')*100 < get_voucher('cryptozoology').config.extra then -- buying a joker
             c1:set_edition('e_tentacle')
         end
     end
@@ -5270,6 +5271,59 @@ do
 
 
 end -- cryptozoology
+do
+    local name="Reroll Aisle"
+    local id="reroll_aisle"
+    local loc_txt = {
+        name = name,
+        text = {
+            "First {C:attention}item{} and {C:attention}Booster Pack{}",
+            "in shop are {C:attention}free{} after rerolls",
+            -- "between rerolls",
+            "{C:inactive}(Reroll Surplus + Clearance Aisle){}"
+        }
+    }
+    local this_v = SMODS.Voucher{
+        name=name, key=id,
+        config={rarity=2},
+        pos={x=0,y=0}, loc_txt=loc_txt,
+        cost=10, unlocked=true, discovered=true, available=true, requires={'v_reroll_surplus',MOD_PREFIX_V..'clearance_aisle'}
+    }
+    handle_atlas(id,this_v)
+    this_v.loc_vars = function(self, info_queue, center)
+        return {vars={}}
+    end
+    handle_register(this_v)
+
+    local Card_apply_to_run_ref = Card.apply_to_run
+    function Card:apply_to_run(center)
+        local center_table = {
+            name = center and center.name or self and self.ability.name,
+            extra = center and center.config.extra or self and self.ability.extra
+        }
+        if center_table.name == 'Reroll Aisle' then
+            if G.shop_jokers then
+                bargain_aisle_effect()
+            end
+            if G.shop_booster then
+                clearance_aisle_effect()
+            end
+        end 
+        Card_apply_to_run_ref(self, center)
+    end
+    -- call function when reroll is in lovely patch
+
+    local G_FUNCS_reroll_shop_ref=G.FUNCS.reroll_shop
+    function G.FUNCS.reroll_shop(e)
+        G_FUNCS_reroll_shop_ref(e)
+        if used_voucher('reroll_aisle') then
+            after_event(function()
+                bargain_aisle_effect()
+                clearance_aisle_effect()
+            end)
+        end
+    end
+end -- reroll aisle
 
     -- this challenge is only for test
     if nil then
@@ -5306,7 +5360,9 @@ end -- cryptozoology
                 -- {id = 'c_cryptid'},
                 --{id = 'c_devil_cu'},
                 -- {id = 'c_death'},
-                {id='c_hanged_man',negative=true},
+                {id='c_betm_abilities_rental_slot',negative=true},
+                {id='c_betm_abilities_absorber',negative=true},
+                {id='c_cry_hammerspace',negative=true},
             },
             vouchers = {
                 {id = MOD_PREFIX_V.. 'trash_picker'},
@@ -5319,8 +5375,8 @@ end -- cryptozoology
                 -- {id = 'v_liquidation'},
                 {id = MOD_PREFIX_V.. 'overshopping'},
                 {id = MOD_PREFIX_V.. 'stow'},
-                {id = MOD_PREFIX_V.. 'bargain_aisle'},
-                {id = MOD_PREFIX_V.. 'recycle_area'},
+                {id = MOD_PREFIX_V.. 'reroll_aisle'},
+                {id = MOD_PREFIX_V.. 'cryptozoology'},
                 {id = 'v_retcon'},
                 -- {id = 'v_event_horizon'},
             },
