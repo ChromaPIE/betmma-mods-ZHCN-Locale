@@ -98,10 +98,6 @@ vec4 HSL(vec4 c)
 	return hsl;
 }
 
-float mod(float a, float b){
-	return a-(b*floor(a/b));
-}
-
 vec4 effect( vec4 colour, Image texture, vec2 texture_coords, vec2 screen_coords )
 {
     vec4 tex = Texel(texture, texture_coords);
@@ -117,7 +113,7 @@ vec4 effect( vec4 colour, Image texture, vec2 texture_coords, vec2 screen_coords
 
 
     tex.rgb = RGB(hsl).rgb;
-    if(1-uv.y<percentage){
+    if(1.-uv.y<percentage){
         tex.rgb*=0.4;
     }
 
