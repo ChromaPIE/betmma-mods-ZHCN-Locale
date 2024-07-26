@@ -392,7 +392,7 @@ local function INIT()
         end
     end
 
-    
+
 end
 
 
@@ -542,6 +542,11 @@ else
             end
         end
     end
+end
+
+-- JokerDisplay Support
+if IN_SMOD1 and _G["JokerDisplay"] then
+    NFS.load(SMODS.current_mod.path .. "jokerdisplay_integration.lua")()
 end
 ----------------------------------------------
 ------------MOD CODE END----------------------

@@ -358,7 +358,7 @@ do
 
     local Card_draw_ref=Card.draw
     function Card:draw(layer)
-        if self.ability.set=='Ability' and self.area~=G.shop_abilities and self.area~=G.shop_jokers and not ability_cooled_down(self) then --and self.area==G.betmma_abilities
+        if self.ability.set=='Ability' and (self.area==G.betmma_abilities or self.area==G.jokers or self.area==G.consumeables or self.area==G.deck or self.area==G.hand) and not ability_cooled_down(self) then --if i wrote self.area~=shop_abilities then in collection menu it's still grayed
             Card_draw_ref(self,layer)
             local _send=self.ARGS.send_to_shader
             _send={betmma=true,extra={{name='percentage',val=ability_cooled_down_percentage(self)}},vanilla=_send}
@@ -623,7 +623,7 @@ do
             text = {
                 '接下来的{C:attention}#5#{}次',
                 '{C:attention}随机判定事件',
-                '必定成功', 
+                '必定成功',
                 '{C:inactive,s:0.8}（剩余{C:attention,s:0.8}#4#{C:inactive,s:0.8}次）',
                 '{C:mult}#1##2#{}#3#'
         }
