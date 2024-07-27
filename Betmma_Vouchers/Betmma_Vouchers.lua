@@ -2,9 +2,9 @@
 --- MOD_NAME: Betmma Vouchers
 --- MOD_ID: BetmmaVouchers
 --- MOD_AUTHOR: [Betmma]
---- MOD_DESCRIPTION: 50 Vouchers and 24 Fusion Vouchers! v2.2.0
+--- MOD_DESCRIPTION: 50 Vouchers and 24 Fusion Vouchers! v2.2.1
 --- PREFIX: betm_vouchers
---- VERSION: 2.2.0.2(20240725)
+--- VERSION: 2.2.1(20240725)
 --- BADGE_COLOUR: ED40BF
 --- PRIORITY: -1
 
@@ -2741,7 +2741,7 @@ do
         name = "铁丝发夹",
         text = {
             "商店中可能出现{C:attention}左极固定{}小丑牌",
-            "每张{C:attention}左极固定{}小丑牌",
+            "每张{C:attention}左极固定{}小丑牌在{C:attention}触发前",
             "将复制其{C:attention}右侧{}小丑牌的能力"
         }
     }
@@ -5447,7 +5447,9 @@ end -- reroll aisle
                 {id = 'v_paint_brush'},
                 -- {id = 'v_liquidation'},
                 {id = MOD_PREFIX_V.. 'overshopping'},
-                {id = MOD_PREFIX_V.. 'stow'},
+                {id = 'v_overstock_norm'},
+                {id = 'v_overstock_plus'},
+                -- {id = MOD_PREFIX_V.. 'stow'},
                 {id = MOD_PREFIX_V.. 'reroll_aisle'},
                 {id = MOD_PREFIX_V.. 'cryptozoology'},
                 {id = 'v_retcon'},
