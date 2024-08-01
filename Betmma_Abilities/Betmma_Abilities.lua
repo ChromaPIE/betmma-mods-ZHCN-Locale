@@ -4,7 +4,7 @@
 --- MOD_AUTHOR: [Betmma]
 --- MOD_DESCRIPTION: New type of card: Abilities
 --- PREFIX: betm_abilities
---- VERSION: 1.0.2.2(20240729)
+--- VERSION: 1.0.2.3(20240731)
 --- BADGE_COLOUR: 8D90BF
 
 ----------------------------------------------
@@ -32,7 +32,7 @@ function CDLoc(now, need, tp, xargs)
 end
 
 --[[ todo: compatibility with hammerspace (CCD) or in consumable slots
-current progress: abilities are able to cooldown in everywhere, but passive calculations (using calculate function) don't work in other areas. Active abilities can work.
+current progress: abilities are able to cooldown everywhere, but passive calculations (using calculate function) don't work in other areas. Active abilities can work.
 ]]
 MOD_PREFIX='betm_abilities'
 USING_BETMMA_ABILITIES=true
@@ -565,6 +565,8 @@ local function ability_prototype(data)
         return true
     end
     data.config.cardarea='betmma_abilities'
+    data.set="Ability"
+    data.pos={x=0,y=0}
     return SMODS.Consumable(data)
 end
 
@@ -629,8 +631,6 @@ do
                 '{C:mult}#1##2#{}#3#'
         }
         },
-        set = 'Ability',
-        pos = {x = 0,y = 0}, 
         atlas = key, 
         config = {extra = {}, cooldown={type='round', now=1, need=1} },
         discovered = true,
@@ -670,8 +670,6 @@ do
                 '{C:mult}#1##2#{}#3#'
         }
         },
-        set = 'Ability',
-        pos = {x = 0,y = 0}, 
         atlas = key, 
         config = {extra = { value=2},cooldown={type='round', now=1, need=1}, },
         discovered = true,
@@ -713,8 +711,6 @@ do
                 '{C:mult}#1##2#{}#3#'
         }
         },
-        set = 'Ability',
-        pos = {x = 0,y = 0}, 
         atlas = key, 
         config = {extra = { },cooldown={type='hand', now=2, need=2}, },
         discovered = true,
@@ -770,23 +766,34 @@ do
         end
     end
 
-    local function cancel_bump_all()
-        cancel_bump(G.play)
-        cancel_bump(G.hand)
-        cancel_bump(G.discard)
-        cancel_bump(G.deck)
+    local function remove_temp_antidebuff(area)
+        for k,v in ipairs(area.cards) do
+            v.ability.heal_ability_temp_antidebuff=nil
+        end
+    end
+
+    
+    local function apply_to_all_cards(func)
+        func(G.play)
+        func(G.hand)
+        func(G.discard)
+        func(G.deck)
+    end
+    local function all_functions_to_all_cards()
+        apply_to_all_cards(cancel_bump)
+        apply_to_all_cards(remove_temp_antidebuff)
     end
 
     local G_FUNCS_draw_from_play_to_discard_ref=G.FUNCS.draw_from_play_to_discard
     G.FUNCS.draw_from_play_to_discard = function(e)
-        cancel_bump_all()
+        all_functions_to_all_cards()
         G_FUNCS_draw_from_play_to_discard_ref(e)
     end
 
     local G_FUNCS_discard_cards_from_highlighted=G.FUNCS.discard_cards_from_highlighted
     G.FUNCS.discard_cards_from_highlighted = function(e, hook)
         if not hook then
-            cancel_bump_all()
+            all_functions_to_all_cards()
         end
         G_FUNCS_discard_cards_from_highlighted(e,hook)
     end
@@ -805,8 +812,6 @@ do
                 '{C:mult}#1##2#{}#3#'
         }
         },
-        set = 'Ability',
-        pos = {x = 0,y = 0}, 
         atlas = key, 
         config = {extra = { },cooldown={type='round', now=1, need=1}, },
         discovered = true,
@@ -854,12 +859,11 @@ do
         loc_txt = {
             name = '治愈术',
             text = {
-                "复原选定的失效牌",
+                "临时复原",
+                "选定的失效牌",
                 '{C:mult}#1##2#{}#3#'
         }
         },
-        set = 'Ability',
-        pos = {x = 0,y = 0}, 
         atlas = key, 
         config = {extra = { },cooldown={type='hand', now=3, need=3}, },
         discovered = true,
@@ -873,11 +877,12 @@ do
         use = function(self,card,area,copier)
             for i=1,#G.hand.highlighted do
                 G.hand.highlighted[i]:set_debuff(false)
+                G.hand.highlighted[i].ability.heal_ability_temp_antidebuff=true
             end
             
         end
     }
-end --heal (need fix if it's redebuffed, maybe change it to not be able to be debuffed for this hand)
+end --heal
 do
     local key='absorber'
     get_atlas(key)
@@ -893,8 +898,6 @@ do
                 '{C:mult}#1##2#{}#3#'
         }
         },
-        set = 'Ability',
-        pos = {x = 0,y = 0}, 
         atlas = key, 
         config = {extra = {add=0.1,value=1},cooldown={type='ante', now=1, need=1}, },
         discovered = true,
@@ -936,8 +939,6 @@ do
                 '{C:mult}#1##2#{}#3#'
         }
         },
-        set = 'Ability',
-        pos = {x = 0,y = 0}, 
         atlas = key, 
         config = {extra = {value=1},cooldown={type='round', now=2, need=2}, },
         discovered = true,
@@ -968,8 +969,6 @@ do
                 'Cooldown: {C:mult}$#1#/$#2# #3#{}'
         }
         },
-        set = 'Ability',
-        pos = {x = 0,y = 0}, 
         atlas = key, 
         config = {extra = {value=5},cooldown={type='money used', now=20, need=20}, },
         discovered = true,
@@ -1005,8 +1004,6 @@ do
                 'Cooldown: {C:mult}#1#/#2# #3#{}'
         }
         },
-        set = 'Ability',
-        pos = {x = 0,y = 0}, 
         atlas = key, 
         config = {extra = {value=1,cost=10},cooldown={type='blind skip', now=4, need=4}, },
         discovered = true,
@@ -1038,10 +1035,8 @@ do
                 'Cooldown: {C:mult}#1#/#2# #3#{}'
         }
         },
-        set = 'Ability',
-        pos = {x = 0,y = 0}, 
         atlas = key, 
-        config = {extra = {},cooldown={type='round', now=0, need=0}, },
+        config = {extra = {},cooldown={type='round', now=2, need=2}, },
         discovered = true,
         cost = 6,
         loc_vars = function(self, info_queue, card)
@@ -1075,8 +1070,6 @@ do
                 'Cooldown: {C:mult}#1#/#2# #3#{}'
         }
         },
-        set = 'Ability',
-        pos = {x = 0,y = 0}, 
         atlas = key, 
         config = {extra = {},cooldown={type='hand', now=2, need=2}, },
         discovered = true,
@@ -1131,8 +1124,6 @@ do
                 '{C:mult}#1##2#{}#3#'
         }
         },
-        set = 'Ability',
-        pos = {x = 0,y = 0}, 
         atlas = key, 
         config = {extra = {chance=50 },cooldown={type='hand', now=25, need=25}, },
         discovered = true,
@@ -1190,8 +1181,6 @@ do
                 '{C:blue}被动'
         }
         },
-        set = 'Ability',
-        pos = {x = 0,y = 0}, 
         atlas = key, 
         config = {extra = {value=1,lose=4},cooldown={type='passive'}, },
         discovered = true,
@@ -1247,8 +1236,6 @@ do
                 '{C:blue}被动'
         }
         },
-        set = 'Ability',
-        pos = {x = 0,y = 0}, 
         atlas = key, 
         config = {extra = {value=1},cooldown={type='passive'}, },
         discovered = true,
@@ -1289,8 +1276,6 @@ do
                 '{C:blue}被动'
         }
         },
-        set = 'Ability',
-        pos = {x = 0,y = 0}, 
         atlas = key, 
         config = {extra = {value=2},cooldown={type='passive'}, },
         discovered = true,
@@ -1323,12 +1308,10 @@ do
             text = {
                 "If played hand has less then 5 cards,", 
                 "{C:attention}+#1#{} hands per card below {C:attention}5",
-                "(Capped at +0.8 per hand)",
+                "(Capped at {C:attention}+0.80{} per hand)",
                 '{C:blue}Passive{}'
         }
         },
-        set = 'Ability',
-        pos = {x = 0,y = 0}, 
         atlas = key, 
         config = {extra = {value=0.2},cooldown={type='passive'}, },
         discovered = true,
@@ -1364,8 +1347,6 @@ do
                 '{C:blue}Passive{}'
         }
         },
-        set = 'Ability',
-        pos = {x = 0,y = 0}, 
         atlas = key, 
         config = {extra = {value=6},cooldown={type='passive'}, },
         discovered = true,
@@ -1391,6 +1372,98 @@ do
         end
     end
 end --shield
+do
+    local key='shuffle'
+    get_atlas(key)
+    betm_abilities[key]=ability_prototype { 
+        key = key,
+        loc_txt = {
+            name = 'Shuffle',
+            text = { 
+                "If no cards remain, shuffle", 
+                "all cards back into deck",
+                '{C:blue}Passive{}'
+        }
+        },
+        atlas = key, 
+        config = {extra = {value=6},cooldown={type='passive'}, },
+        discovered = true,
+        cost = 6,
+        loc_vars = function(self, info_queue, card)
+            return {vars = {
+            card.ability.extra.value}}
+        end,
+        can_use = function(self,card)
+            return false
+        end,
+        calculate=function(self,card,context)
+        end,
+    }
+end --shuffle
+do
+    local key='dead_branch'
+    get_atlas(key)
+    betm_abilities[key]=ability_prototype { 
+        key = key,
+        loc_txt = {
+            name = 'Dead Branch',
+            text = { 
+                "When a card is {C:attention}destroyed{}, add", 
+                "a random card with {C:attention}enhancement{},", 
+                "{C:attention}seal{} and {C:attention}edition{} into deck",
+                '{C:blue}Passive{}'
+        }
+        },
+        atlas = key, 
+        config = {extra = {value=6},cooldown={type='passive'}, },
+        discovered = true,
+        cost = 6,
+        loc_vars = function(self, info_queue, card)
+            return {vars = {
+            card.ability.extra.value}}
+        end,
+        can_use = function(self,card)
+            return false
+        end,
+        calculate=function(self,card,context)
+            if context.remove_playing_cards then
+                for i = 1, #context.removed do
+                    -- print(i)
+                    card = create_card("Enhanced", G.deck, nil, nil, nil, true, nil, 'dead_branch')
+                    local edition = poll_edition('std_dead_branch_edition'..G.GAME.round_resets.ante, nil,nil,true)
+                    card:set_edition(edition)
+                    local seal_type = pseudorandom(pseudoseed('std_dead_branch'..G.GAME.round_resets.ante))
+                    card:set_seal(SMODS.Seal.rng_buffer[math.ceil(seal_type*#SMODS.Seal.rng_buffer) or 1])
+                    -- std is to prevent glitched seed working
+                            card:add_to_deck()
+                            G.deck.config.card_limit = G.deck.config.card_limit + 1
+                            table.insert(G.playing_cards, card)
+                            G.deck:emplace(card)
+                end
+            end
+        end,
+    }
+    local Card_shatter_ref=Card.shatter
+    function Card:shatter()
+        if (self.ability.set == 'Default' or self.ability.set == 'Enhanced') and G and G.betmma_abilities then    
+            for i = 1, #G.betmma_abilities.cards do
+                G.betmma_abilities.cards[i]:calculate_joker({remove_playing_cards = true, removed = {self}})
+            end
+        end
+        Card_shatter_ref(self)
+    end
+    
+    local Card_start_dissolve_ref=Card.start_dissolve
+    function Card:start_dissolve(dissolve_colours, silent, dissolve_time_fac, no_juice)
+        if (self.ability.set == 'Default' or self.ability.set == 'Enhanced') and G and G.betmma_abilities then    
+            for i = 1, #G.betmma_abilities.cards do
+                G.betmma_abilities.cards[i]:calculate_joker({remove_playing_cards = true, removed = {self}})
+            end
+        end
+        Card_start_dissolve_ref(self,dissolve_colours, silent, dissolve_time_fac, no_juice)
+    end
+    -- patching in calculating hand and using consumable doesn't work for incantation and other 2 random destroy. I gave up calling calculate_joker in ability.toml
+end --dead branch 
 
 for k,v in pairs(betm_abilities) do
     v.config.extra.local_d6_sides="cryptid compat to prevent it reset my config upon use ;( ;("

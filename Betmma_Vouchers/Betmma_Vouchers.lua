@@ -2420,7 +2420,7 @@ do
     end
     local Card_set_debuff=Card.set_debuff
     function Card:set_debuff(should_debuff)
-        if used_voucher('omnicard') and self.config and self.config.center_key=='m_wild' then
+        if used_voucher('omnicard') and self.config and self.config.center_key=='m_wild' or self.ability.heal_ability_temp_antidebuff then -- betmma heal ability
             self.debuff = false
             return
         end
@@ -5427,7 +5427,7 @@ end -- reroll aisle
                 -- {id = 'j_cry_universum', },
                 -- {id = 'j_madness', eternal = true},
                 {id = JOKER_MOD_PREFIX..'j_housing_choice'},-- edition='phantom'},
-                {id = 'j_ceremonial', pinned = true},
+                {id = 'j_lobc_mosb', pinned = true},
             },
             consumeables = {
                 -- {id = 'c_cryptid'},
@@ -5435,7 +5435,10 @@ end -- reroll aisle
                 -- {id = 'c_death'},
                 {id='c_betm_abilities_rental_slot',negative=true},
                 {id='c_betm_abilities_absorber',negative=true},
-                {id='c_cry_hammerspace',negative=true},
+                {id='c_hanged_man',negative=true},
+                {id='c_immolate',negative=true},
+                {id='c_grim',negative=true},
+                {id='c_grim',negative=true},
             },
             vouchers = {
                 {id = MOD_PREFIX_V.. 'trash_picker'},
@@ -5450,6 +5453,8 @@ end -- reroll aisle
                 {id = 'v_overstock_norm'},
                 {id = 'v_overstock_plus'},
                 -- {id = MOD_PREFIX_V.. 'stow'},
+                {id = MOD_PREFIX_V.. 'clearance_aisle'},
+                {id = MOD_PREFIX_V.. 'bargain_aisle'},
                 {id = MOD_PREFIX_V.. 'reroll_aisle'},
                 {id = MOD_PREFIX_V.. 'cryptozoology'},
                 {id = 'v_retcon'},
