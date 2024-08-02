@@ -2993,7 +2993,7 @@ do
     local loc_txt = {
         name = "清仓处理",
         text = {
-            "商店内的第一个补充包",
+            "每个商店内的第一个补充包",
             "均为{C:attention}免费"
         }
     }
@@ -3448,7 +3448,7 @@ do
         text = {
             "购买{C:planet}星球牌{}时",
             "随机生成一张{C:planet}星球牌",
-            "{C:inactive}（必须有空间）",
+            "{C:inactive}（必须有空位）",
             "{C:inactive}（星球牌商人 + 第二张半价）"
         }
     }
@@ -5242,11 +5242,11 @@ do
     local name="Cryptozoology"
     local id="cryptozoology"
     local loc_txt = {
-        name = name,
+        name = "玄奇异兽",
         text = {
-            "Bought {C:attention}Jokers{} have a {C:dark_edition}#1#%{} chance",
-            "to have {C:dark_edition}Tentacle{} edition added",
-            "{C:inactive}(Crystal Ball + Undying){}"
+            "购得的{C:attention}小丑牌{}有{C:dark_edition}#1#%{}的几率",
+            "带有{C:dark_edition}触角{}版本",
+            "{C:inactive}（水晶球 + 不灭）"
         }
     }
     local this_v = SMODS.Voucher{
@@ -5348,12 +5348,13 @@ do
     local name="Reroll Aisle"
     local id="reroll_aisle"
     local loc_txt = {
-        name = name,
+        name = "连轴抛售",
         text = {
-            "First {C:attention}item{} and {C:attention}Booster Pack{}",
-            "in shop are {C:attention}free{} after rerolls",
+            "在每个商店内重掷后",
+            "第一件{C:attention}商品{}和{C:attention}补充包",
+            "均为{C:attention}免费",
             -- "between rerolls",
-            "{C:inactive}(Reroll Surplus + Clearance Aisle){}"
+            "{C:inactive}（大量重掷 + 清仓处理）"
         }
     }
     local this_v = SMODS.Voucher{
