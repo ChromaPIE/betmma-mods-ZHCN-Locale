@@ -1415,7 +1415,7 @@ do
         }
         if center_table.name == 'Scrawl' then
             ease_dollars(get_voucher('scrawl').config.extra*#G.jokers.cards)
-            randomly_create_joker(math.ceil(G.jokers.config.card_limit - (#G.jokers.cards + G.GAME.joker_buffer)),nil,nil)
+            randomly_create_joker(math.min(math.ceil(G.jokers.config.card_limit - (#G.jokers.cards + G.GAME.joker_buffer)),100),nil,nil)
         end
         if center_table.name == 'Scribble' then
             for i=1, get_voucher('scribble').config.extra do
@@ -5427,7 +5427,7 @@ end -- reroll aisle
                 {id = 'j_mime', },
                 -- {id = 'j_cry_universum', },
                 -- {id = 'j_madness', eternal = true},
-                {id = JOKER_MOD_PREFIX..'j_housing_choice'},-- edition='phantom'},
+                {id = JOKER_MOD_PREFIX..'j_housing_choice', edition='phantom'},
                 {id = 'j_lobc_mosb', pinned = true},
             },
             consumeables = {
@@ -5457,7 +5457,7 @@ end -- reroll aisle
                 {id = MOD_PREFIX_V.. 'clearance_aisle'},
                 {id = MOD_PREFIX_V.. 'bargain_aisle'},
                 {id = MOD_PREFIX_V.. 'reroll_aisle'},
-                {id = MOD_PREFIX_V.. 'cryptozoology'},
+                {id = MOD_PREFIX_V.. 'reincarnate'},
                 {id = 'v_retcon'},
                 -- {id = 'v_event_horizon'},
             },
