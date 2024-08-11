@@ -2,9 +2,9 @@
 --- MOD_NAME: Betmma Vouchers
 --- MOD_ID: BetmmaVouchers
 --- MOD_AUTHOR: [Betmma]
---- MOD_DESCRIPTION: 50 Vouchers and 24 Fusion Vouchers! v2.2.1
+--- MOD_DESCRIPTION: 50 Vouchers and 24 Fusion Vouchers! v2.2.2
 --- PREFIX: betm_vouchers
---- VERSION: 2.2.1(20240729)
+--- VERSION: 2.2.2(20240807)
 --- BADGE_COLOUR: ED40BF
 --- PRIORITY: -1
 
@@ -599,7 +599,7 @@ end
                 if v~='UNAVAILABLE' then
                     local card= G.P_CENTERS[v]
                     local rarity=card.config and normalize_rarity(card.config.rarity)
-                    if (pseudorandom(v) < 1/RARITY_VOUCHER_PROBABILITY[rarity]) then
+                    if (pseudorandom('std_'..v) < 1/RARITY_VOUCHER_PROBABILITY[rarity]) then
                         new_pool[#new_pool+1]=v
                         _pool_size=_pool_size+1
                     end
@@ -3170,7 +3170,7 @@ do
     handle_register(this_v)
     local ease_dollars_ref = ease_dollars
     function ease_dollars(mod, instant)
-        if used_voucher('gold_round_up') then
+        if used_voucher('gold_round_up') and mod then
             local original=G.GAME.dollars+mod
             local new=math.ceil(original)
             if new % 2 == 1 then
@@ -5418,16 +5418,13 @@ end -- reroll aisle
                 -- {id = 'j_sock_and_buskin'},
                 -- {id = 'j_sock_and_buskin'},
                 -- {id = 'j_oops'},
-                -- {id = 'j_oops'},
-                -- {id = 'j_oops'},
-                -- {id = 'j_oops'},
-                -- {id = 'j_oops'},
-                -- {id = 'j_oops'},
                 {id = 'j_baron', },
-                {id = 'j_mime', },
+                {id = 'j_blueprint', },
+                {id = JOKER_MOD_PREFIX..'j_gameplay_update'},
+                {id = JOKER_MOD_PREFIX..'j_gameplay_update'},
                 -- {id = 'j_cry_universum', },
                 -- {id = 'j_madness', eternal = true},
-                {id = JOKER_MOD_PREFIX..'j_housing_choice', edition='phantom'},
+                {id = JOKER_MOD_PREFIX..'j_jimbow'},--, edition='phantom'},
                 {id = 'j_lobc_mosb', pinned = true},
             },
             consumeables = {
@@ -5445,9 +5442,6 @@ end -- reroll aisle
                 {id = MOD_PREFIX_V.. 'trash_picker'},
                 {id = MOD_PREFIX_V.. '3d_boosters'},
                 {id = MOD_PREFIX_V.. '4d_boosters'},
-                {id = MOD_PREFIX_V.. 'rich_boss'},
-                {id = MOD_PREFIX_V.. 'half_life'},
-                {id = MOD_PREFIX_V.. 'richer_boss'},
                 {id = 'v_paint_brush'},
                 -- {id = 'v_liquidation'},
                 {id = MOD_PREFIX_V.. 'overshopping'},
@@ -5456,8 +5450,10 @@ end -- reroll aisle
                 -- {id = MOD_PREFIX_V.. 'stow'},
                 {id = MOD_PREFIX_V.. 'clearance_aisle'},
                 {id = MOD_PREFIX_V.. 'bargain_aisle'},
-                {id = MOD_PREFIX_V.. 'reroll_aisle'},
-                {id = MOD_PREFIX_V.. 'reincarnate'},
+                {id = MOD_PREFIX_V.. 'cryptozoology'},
+                {id = 'v_betm_abilities_able'},
+                {id = 'v_betm_abilities_cooled_down'},
+                {id = 'v_betm_abilities_cooled_below'},
                 {id = 'v_retcon'},
                 -- {id = 'v_event_horizon'},
             },

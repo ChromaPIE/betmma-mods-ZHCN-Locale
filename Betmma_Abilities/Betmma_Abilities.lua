@@ -4,7 +4,7 @@
 --- MOD_AUTHOR: [Betmma]
 --- MOD_DESCRIPTION: New type of card: Abilities
 --- PREFIX: betm_abilities
---- VERSION: 1.0.2.4(20240803)
+--- VERSION: 1.0.2.6(20240810)
 --- BADGE_COLOUR: 8D90BF
 
 ----------------------------------------------
@@ -392,7 +392,7 @@ end -- add Ability area in shop (only appear after a boss blind)
 
 do
     function GET_PATH_COMPAT()
-        return IN_SMOD1 and SMODS.current_mod.path or SMODS.findModByID('BetmmaVouchers').path
+        return IN_SMOD1 and SMODS.current_mod.path or SMODS.findModByID('BetmmaAbilities').path
     end
 
     function betmma_load_shader(v)
@@ -432,17 +432,20 @@ do
             local card=cardarea.cards[i]
             if card.ability and card.ability.cooldown and card.ability.cooldown.type==type then
                 card.ability.cooldown.now=card.ability.cooldown.now-value
-                if card.ability.cooldown.now<0 then
+                if not used_abilvoucher('cooled_below') and card.ability.cooldown.now<0 then
                     card.ability.cooldown.now=0
                 end
             end
         end
     end
     function update_ability_cooldown(type,value)
-        if value==nil then value=1 end
         if G.betmma_abilities==nil then
             print("G.betmma_abilities doesn't exist! Maybe ability.toml isn't installed correctly.")
             return
+        end
+        if value==nil then value=1 end
+        if G.GAME.cooldown_mult~=nil then
+            value=value*G.GAME.cooldown_mult
         end
         update_ability_cooldown_single_area(G.betmma_abilities,type,value)
         update_ability_cooldown_single_area(G.jokers,type,value)
@@ -465,11 +468,11 @@ do
     end
 
     local ease_dollars_ref = ease_dollars
-    -- update 'money used' and 'money gain' cooldown
+    -- update 'money spent' and 'money gain' cooldown
     function ease_dollars(mod, instant)
-        if mod<0 then
-            update_ability_cooldown('money used',-mod)
-        elseif mod>0 then
+        if mod and mod<0 then
+            update_ability_cooldown('money spent',-mod)
+        elseif mod and mod>0 then
             update_ability_cooldown('money gain',mod)
         end
         ease_dollars_ref(mod, instant)
@@ -480,6 +483,14 @@ do
     G.FUNCS.skip_blind = function(e)
         update_ability_cooldown('blind skip')
         G_FUNCS_skip_blind_ref(e)
+    end
+
+    
+    local Card_use_consumeable_ref=Card.use_consumeable
+    -- update 'consumables used' cooldown
+    function Card:use_consumeable(area, copier)
+        update_ability_cooldown('consumables used')
+        Card_use_consumeable_ref(self,area,copier)
     end
 
     local G_FUNCS_play_cards_from_highlighted_ref=G.FUNCS.play_cards_from_highlighted
@@ -610,12 +621,22 @@ function Card:use_consumeable(area, copier)
     Card_use_consumeable_ref(self,area,copier)
 end
 
-local function get_atlas(key)
+local function get_atlas(key,type)
+    local px,py,prefix
+    if type==nil or type=='ability' then
+        px=34
+        py=34
+        prefix='a_'
+    elseif type=='voucher' then
+        px=71
+        py=95
+        prefix='v_'
+    end
     betm_abilities_atlases[key]=SMODS.Atlas {  
         key = key,
-        px = 34,
-        py = 34,
-        path = 'a_'..key..'.png'
+        px = px,
+        py = py,
+        path = prefix..key..'.png'
     }
 end
 function ability_cooled_down(self,card)
@@ -704,7 +725,8 @@ do
     pseudorandom_forced_0_count=0
     local pseudorandom_ref=pseudorandom
     function pseudorandom(seed, min, max)
-        if pseudorandom_forced_0_count>0 and type(seed) == 'string' and not string.match(seed,'^std') and not string.match(seed,'^soul_') and not string.match(seed,'^cry_et') and not string.match(seed,'^cry_per') and not string.match(seed,'^cry_pin') and not string.match(seed,'^cry_flip') and not string.match(seed,'^d6_joker') and not string.match(seed,'^consumable_type') and seed~='wheel' and seed~='shy_today' and seed~='certsl' and seed~='real_random'then
+        if pseudorandom_forced_0_count>0 and type(seed) == 'string' and not string.match(seed,'^std') and not string.match(seed,'^soul_') and not string.match(seed,'^cry_et') and not string.match(seed,'^cry_per') and not string.match(seed,'^cry_pin') and not string.match(seed,'^cry_flip') and not string.match(seed,'^d6_joker') and not string.match(seed,'^consumable_type') and seed~='wheel' and seed~='shy_today' and seed~='certsl' and seed~='real_random' and seed~='confusion_side'then
+            print(seed)
             pseudorandom_forced_0_count=pseudorandom_forced_0_count-1
             if min and max then
                 return min
@@ -987,7 +1009,7 @@ do
         }
         },
         atlas = key, 
-        config = {extra = {value=5},cooldown={type='money used', now=20, need=20}, },
+        config = {extra = {value=5},cooldown={type='money spent', now=20, need=20}, },
         discovered = true,
         cost = 6,
         loc_vars = function(self, info_queue, card)
@@ -1080,9 +1102,9 @@ do
         loc_txt = {
             name = 'Extract',
             text = {
-                "Downgrade current hand",
-                "and create a {C:dark_edition}Negative", 
-                "{C:planet}Planet{} card of it", 
+                -- "Downgrade current hand",
+                "Create a {C:dark_edition}Negative {C:planet}Planet{}", 
+                "card of current hand", 
                 -- "(Cooldown is higher before first use)",
                 'Cooldown: {C:mult}#1#/#2# #3#{}'
         }
@@ -1101,7 +1123,7 @@ do
             local card_type = 'Planet'
             local text,disp_text,poker_hands,scoring_hand,non_loc_disp_text = G.FUNCS.get_poker_hand_info(G.hand.highlighted)
             
-            level_up_hand(nil, text, nil, -1)
+            -- level_up_hand(nil, text, nil, -0.5)
             G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
             G.E_MANAGER:add_event(Event({
                 trigger = 'before',
@@ -1127,6 +1149,136 @@ do
         end,
     }
 end --extract
+do
+    local key='endoplasm'
+    get_atlas(key)
+    betm_abilities[key]=ability_prototype { 
+        key = key,
+        loc_txt = {
+            name = 'Endoplasm',
+            text = { 
+                "Set a random {C:attention}consumable{}",
+                "to be {C:dark_edition}Negative{}", 
+                'Cooldown: {C:mult}#1#/#2# #3#{}'
+        }
+        },
+        atlas = key, 
+        config = {extra = {},cooldown={type='consumables used', now=5, need=5}, },
+        discovered = true,
+        cost = 6,
+        loc_vars = function(self, info_queue, card)
+            return {vars = {card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type}}
+        end,
+        can_use = function(self,card)
+            return ability_cooled_down(self,card) and #G.consumeables.cards>0
+        end,
+        use = function(self,card,area,copier)
+            local index=math.ceil(pseudorandom('std_endoplasm')*#G.consumeables.cards)
+            G.consumeables.cards[index]:set_edition({negative=true})
+        end,
+    }
+end --endoplasm
+do
+    local key='pay2win'
+    get_atlas(key)
+    betm_abilities[key]=ability_prototype { 
+        key = key,
+        loc_txt = {
+            name = 'Pay2Win',
+            text = { 
+                "Pay {C:money}$#1#{} to let",
+                "blind size {X:mult,C:white}X#2#{C:attention}", 
+                'Cooldown: None'
+        }
+        },
+        atlas = key, 
+        config = {extra = {cost=5,value=60},cooldown={type='none', now=0, need=0}, },
+        discovered = true,
+        cost = 6,
+        loc_vars = function(self, info_queue, card)
+            local value=card.ability.extra.value
+            value=math.ceil(math.min(value,95))
+            return {vars = {card.ability.extra.cost,value/100}}
+        end,
+        can_use = function(self,card)
+            return ability_cooled_down(self,card) and G and G.STATE == G.STATES.SELECTING_HAND and G.GAME and G.GAME.current_round and (G.GAME.dollars-G.GAME.bankrupt_at)>=card.ability.extra.cost
+        end,
+        use = function(self,card,area,copier)
+            local value=card.ability.extra.value
+            value=math.ceil(math.min(value,95))
+            after_event(function()
+                ease_dollars(-card.ability.extra.cost)
+                G.GAME.blind:wiggle()
+                G.GAME.blind.chips=TalismanCompat(G.GAME.blind.chips)*value/100 -- if current hand ends the round the displayed blind chips won't change and I don't know why
+                -- pprint(G.GAME.blind.chips)
+            end)
+        end,
+    }
+end --pay2win
+do
+    local key='number'
+    get_atlas(key)
+    betm_abilities[key]=ability_prototype { 
+        key = key,
+        loc_txt = {
+            name = 'Number',
+            text = { 
+                "Select a {C:attention}Number{} card to be",
+                "destroyed and draw {C:attention}X{} cards",
+                "where {C:attention}X{} equals to its rank", 
+                'Cooldown: {C:mult}#1#/#2# #3#{}'
+        }
+        },
+        atlas = key, 
+        config = {extra = {},cooldown={type='hand', now=3, need=3}, },
+        discovered = true,
+        cost = 6,
+        loc_vars = function(self, info_queue, card)
+            return {vars = {card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type..'s'}}
+        end,
+        can_use = function(self,card)
+            return ability_cooled_down(self,card) and G.hand.highlighted and #G.hand.highlighted==1 and G.hand.highlighted[1].base.face_nominal==0 and type(G.hand.highlighted[1].base.nominal)=='number'
+        end,
+        use = function(self,card,area,copier)
+            local destroyed_cards = {}
+            for i=#G.hand.highlighted, 1, -1 do
+                destroyed_cards[#destroyed_cards+1] = G.hand.highlighted[i]
+            end
+            G.E_MANAGER:add_event(Event({
+                trigger = 'after',
+                delay = 0.2,
+                func = function() 
+                    for i=#G.hand.highlighted, 1, -1 do
+                        local card = G.hand.highlighted[i]
+                        local hand_space = math.min(#G.deck.cards, card.base.nominal)
+                        if card.ability.name == 'Glass Card' then 
+                            card:shatter()
+                        else
+                            card:start_dissolve(nil, i == #G.hand.highlighted)
+                        end
+                        for i=1, hand_space do --draw cards from deckL
+                            draw_card(G.deck,G.hand, i*100/hand_space,'up',true)
+                        end
+                    end
+                return true end }))
+            for i = 1, #G.jokers.cards do
+                local effects = G.jokers.cards[i]:calculate_joker({remove_playing_cards = true, removed = destroyed_cards})
+                if effects and effects.joker_repetitions then
+                    rep_list = effects.joker_repetitions
+                    for z=1, #rep_list do
+                        if type(rep_list[z]) == 'table' and rep_list[z].repetitions then
+                            for r=1, rep_list[z].repetitions do
+                                card_eval_status_text(rep_list[z].card, 'jokers', nil, nil, nil, rep_list[z])
+                                if percent then percent = percent+percent_delta end
+                                G.jokers.cards[i]:calculate_joker({remove_playing_cards = true, removed = destroyed_cards, retrigger_joker = true})
+                            end
+                        end
+                    end
+                end
+            end
+        end,
+    }
+end --number
 do
     local key='zircon'
     get_atlas(key)
@@ -1507,7 +1659,7 @@ do
         }
         },
         atlas = key, 
-        config = {extra = {value=50,range=10},cooldown={type='passive'}, },
+        config = {extra = {value=50,range=5},cooldown={type='passive'}, },
         discovered = true,
         cost = 6,
         loc_vars = function(self, info_queue, card)
@@ -1527,7 +1679,7 @@ do
             local range=card.ability.extra.range
             range=math.ceil(math.min(range,95))
             if context.after then 
-                local chips_this_hand = hand_chips*mult or TalismanCompat(0)
+                local chips_this_hand = TalismanCompat(hand_chips*mult) or TalismanCompat(0)
                 if chips_this_hand <= TalismanCompat(G.GAME.blind.chips) * range/100 then
                     after_event(function()
                         G.GAME.blind:wiggle()
@@ -1574,10 +1726,113 @@ do
             end
         end
     end
-end -- decay
+end --decay
 
 for k,v in pairs(betm_abilities) do
     v.config.extra.local_d6_sides="cryptid compat to prevent it reset my config upon use ;( ;("
 end
+
+
+-- vouchers --
+betm_abilvouchers={}
+local function voucher_prototype(data)
+    data.unlocked=true
+    data.discovered=true
+    data.available=true
+    data.pos={x=0,y=0}
+    data.atlas=data.key
+    get_atlas(data.key,'voucher')
+    data.cost=data.cost or 10
+    local raw_key=data.key
+    local obj=SMODS.Voucher(data)
+    betm_abilvouchers[raw_key]=obj
+    return obj
+end
+function get_betmma_abilvouchers_key(voucher_raw_key)
+    return betm_abilvouchers[voucher_raw_key].key
+end
+function used_abilvoucher(raw_key)
+    return G.GAME.used_vouchers[get_betmma_abilvouchers_key(raw_key)]
+end
+do
+    voucher_prototype{
+        key='able',
+        loc_txt = {
+            name = 'Able',
+            text = { 
+                "{C:attention}+#1#{} Ability Slot",
+            }
+        },
+        config={extra=1},
+        loc_vars = function(self, info_queue, center)
+            return {vars={center.ability.extra}}
+        end,
+        redeem=function(self,card)
+            G.E_MANAGER:add_event(Event({func = function()
+                if G.betmma_abilities then 
+                    G.betmma_abilities.config.card_limit = G.betmma_abilities.config.card_limit + self.config.extra
+                end
+                return true end }))
+        end
+    }
+    voucher_prototype{
+        key='capable',
+        loc_txt = {
+            name = 'Capable',
+            text = { 
+                "{C:attention}+#1#{} Ability Slot",
+            }
+        },
+        config={extra=1},
+        loc_vars = function(self, info_queue, center)
+            return {vars={center.ability.extra}}
+        end,
+        redeem=function(self,card)
+            G.E_MANAGER:add_event(Event({func = function()
+                if G.betmma_abilities then 
+                    G.betmma_abilities.config.card_limit = G.betmma_abilities.config.card_limit + self.config.extra
+                end
+                return true end }))
+        end,
+        requires={get_betmma_abilvouchers_key('able')}
+    }
+end --able/capable
+do
+    voucher_prototype{
+        key='cooled_down',
+        loc_txt = {
+            name = 'Cooled Down',
+            text = { 
+                "Abilities cool down",
+                "{C:green}#1#%{} faster"
+            }
+        },
+        config={extra=50},
+        loc_vars = function(self, info_queue, center)
+            return {vars={center.ability.extra}}
+        end,
+        redeem=function(self,card)
+            G.GAME.cooldown_mult=(G.GAME.cooldown_mult or 1)*((100+self.config.extra)/100)
+        end
+    }
+    voucher_prototype{
+        key='cooled_below',
+        loc_txt = {
+            name = 'Cooled Below',
+            text = { 
+                "Abilities can cool down",
+                "into {C:attention}negative values",
+                "{C:inactive}(e.g. -2/1 round)"
+            }
+        },
+        config={extra=1},
+        loc_vars = function(self, info_queue, center)
+            return {vars={center.ability.extra}}
+        end,
+        redeem=function(self,card)
+        end,
+        requires={get_betmma_abilvouchers_key('cooled_down')}
+    }
+end --cooled down/cooled below
 ----------------------------------------------
 ------------MOD CODE END----------------------
