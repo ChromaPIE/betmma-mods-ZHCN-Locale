@@ -19,14 +19,23 @@ function CDLoc(now, need, tp, xargs)
         (tp == 'ante' and '底注') or
         (tp == 'hand' and now == 1 and '次出牌' or (tp == 'hand' and '次出牌')) or tp
     if now == 0 then
-        o = {'可用！', '', ''}
-        else o = {v1 .. '/', v2, v3 .. '后可用'}
+        o = { '可用！', '', '' } -- '{C:mult}#1##2#{}#3#'
+    elseif now < 0 then
+        o = { '可用！', '', '（' .. v1 .. '/' .. v2 .. '）' }
+    elseif v3 == 'money spent' then
+        o = { '花费$' .. v1 .. '/', v2 , '后可用' }
+    elseif v3 == 'blind skip' then
+        o = { '跳过' .. v1 .. '/', v2 .. '个盲注', '后可用' }
+    elseif v3 == 'consumables used' then
+        o = { '使用' .. v1 .. '/', v2 .. '张消耗牌' , '后可用' }
+    else o = {v1 .. '/', v2, v3 .. '后可用'}
     end
     if xargs and type(xargs) == "table" then
         for _, v in ipairs(xargs) do
             table.insert(o, v)
         end
-        else table.insert(o, xargs)
+    else
+        table.insert(o, xargs)
     end
     return o
 end
@@ -864,7 +873,7 @@ do
         cost = 6,
         loc_vars = function(self, info_queue, card)
             return {vars = CDLoc(card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type,
-            {G.GAME.last_hand_played or G.localization.poker_hands['High Card'],G.GAME.betmma_cached_hand or 0})}
+            {G.GAME.last_hand_played or G.localization.misc.poker_hands['High Card'],G.GAME.betmma_cached_hand or 0})}
         end,
         can_use = function(self,card)
             return ability_cooled_down(self,card) and not (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK)
@@ -1022,8 +1031,8 @@ do
         discovered = true,
         cost = 6,
         loc_vars = function(self, info_queue, card)
-            return {vars = {card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type,
-            card.ability.extra.value}}
+            return {vars = CDLoc(card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type,
+            card.ability.extra.value)}
         end,
         can_use = function(self,card)
             return ability_cooled_down(self,card) and G and G.STATE == G.STATES.SHOP
@@ -1057,8 +1066,8 @@ do
         discovered = true,
         cost = 6,
         loc_vars = function(self, info_queue, card)
-            return {vars = {card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type..'s',
-            card.ability.extra.value,card.ability.extra.cost}}
+            return {vars = CDLoc(card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type,
+            {card.ability.extra.value,card.ability.extra.cost})}
         end,
         can_use = function(self,card)
             return ability_cooled_down(self,card)
@@ -1077,7 +1086,7 @@ do
         loc_txt = {
             name = '色彩',
             text = {
-                "随机生成一项能力", 
+                "随机生成一项技能", 
                     "{C:inactive}（必须有空位）",
                 -- "(Cooldown is higher before first use)",
                 '{C:mult}#1##2#{}#3#'
@@ -1088,7 +1097,7 @@ do
         discovered = true,
         cost = 6,
         loc_vars = function(self, info_queue, card)
-            return {vars = {card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type..'s'}}
+            return {vars = CDLoc(card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type)}
         end,
         can_use = function(self,card)
             return ability_cooled_down(self,card) and #G.betmma_abilities.cards < G.betmma_abilities.config.card_limit
@@ -1122,7 +1131,7 @@ do
         discovered = true,
         cost = 6,
         loc_vars = function(self, info_queue, card)
-            return {vars = {card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type..'s'}}
+            return {vars = CDLoc(card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type)}
         end,
         can_use = function(self,card)
             return ability_cooled_down(self,card) and #G.hand.highlighted>0 and not (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK)
@@ -1175,7 +1184,7 @@ do
         discovered = true,
         cost = 6,
         loc_vars = function(self, info_queue, card)
-            return {vars = {card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type}}
+            return {vars = CDLoc(card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type)}
         end,
         can_use = function(self,card)
             return ability_cooled_down(self,card) and #G.consumeables.cards>0
@@ -1250,7 +1259,7 @@ do
         discovered = true,
         cost = 6,
         loc_vars = function(self, info_queue, card)
-            return {vars = {card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type..'s'}}
+            return {vars = CDLoc(card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type)}
         end,
         can_use = function(self,card)
             return ability_cooled_down(self,card) and G.hand.highlighted and #G.hand.highlighted==1 and G.hand.highlighted[1].base.face_nominal==0 and type(G.hand.highlighted[1].base.nominal)=='number'
@@ -1313,7 +1322,7 @@ do
         discovered = true,
         cost = 6,
         loc_vars = function(self, info_queue, card)
-            return {vars = {card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type..'s',card.ability.extra.value}}
+            return {vars = CDLoc(card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type,card.ability.extra.value)}
         end,
         can_use = function(self,card)
             return ability_cooled_down(self,card) and not (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK)
@@ -1822,7 +1831,7 @@ do
         loc_txt = {
             name = '能手',
             text = {
-                "能力槽位{C:attention}+#1#",
+                "技能槽位{C:attention}+#1#",
             }
         },
         config={extra=1},
@@ -1842,7 +1851,7 @@ do
         loc_txt = {
             name = '多能妙手',
             text = { 
-                "能力槽位{C:attention}+#1#",
+                "技能槽位{C:attention}+#1#",
             }
         },
         config={extra=1},
@@ -1865,7 +1874,7 @@ do
         loc_txt = {
             name = '加速冷却',
             text = { 
-                "能力冷却加速{C:green}#1#%"
+                "技能冷却加速{C:green}#1#%"
             }
         },
         config={extra=50},
@@ -1881,7 +1890,7 @@ do
         loc_txt = {
             name = '过度冷却',
             text = { 
-                "能力可超量冷却至{C:attention}负值",
+                "技能可超量冷却至{C:attention}负值",
                 "{C:inactive}（例如“-2/1回合后可用”）"
             }
         },
