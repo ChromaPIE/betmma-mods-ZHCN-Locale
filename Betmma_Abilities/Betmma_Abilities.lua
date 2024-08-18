@@ -937,12 +937,12 @@ do
     betm_abilities[key]=ability_prototype { 
         key = key,
         loc_txt = {
-            name = 'Absorber',
+            name = '吸噬',
             text = {
-                "Reduce {C:blue}Hand{} to 1, and gain",
-                "{X:mult,C:white}X#4#{} for each hand reduced",
+                "将{C:blue}出牌次数{}减至1",
+                "每减去一次，{X:mult,C:white}X#4#{}倍率",
                 -- "Current Gain: {X:mult,C:white}X#5#{}",
-                "Current Xmult: {X:mult,C:white}X#5#{}",
+                "{C:inactive}（当前为{X:mult,C:white}X#5#{C:inactive}倍率）",
                 '{C:mult}#1##2#{}#3#'
         }
         },
@@ -1011,10 +1011,10 @@ do
     betm_abilities[key]=ability_prototype { 
         key = key,
         loc_txt = {
-            name = 'Recycle',
+            name = '再循环',
             text = {
-                "Reduce reroll price by {C:money}$#4#{}",
-                'Cooldown: {C:mult}$#1#/$#2# #3#{}'
+                "使重掷价格降低{C:money}$#4#",
+                '{C:mult}#1##2#{}#3#'
         }
         },
         atlas = key, 
@@ -1046,10 +1046,10 @@ do
     betm_abilities[key]=ability_prototype { 
         key = key,
         loc_txt = {
-            name = 'Glyph',
+            name = '符号',
             text = {
-                "{C:attention}-#4#{} Ante, {C:money}-$#5#",
-                'Cooldown: {C:mult}#1#/#2# #3#{}'
+                "底注{C:attention}-#4#{}，扣减{C:money}$#5#",
+                '{C:mult}#1##2#{}#3#'
         }
         },
         atlas = key, 
@@ -1075,12 +1075,12 @@ do
     betm_abilities[key]=ability_prototype { 
         key = key,
         loc_txt = {
-            name = 'Colour',
+            name = '色彩',
             text = {
-                "Create a random ability", 
-                    "{C:inactive}(Must have room)",
+                "随机生成一项能力", 
+                    "{C:inactive}（必须有空位）",
                 -- "(Cooldown is higher before first use)",
-                'Cooldown: {C:mult}#1#/#2# #3#{}'
+                '{C:mult}#1##2#{}#3#'
         }
         },
         atlas = key, 
@@ -1109,13 +1109,12 @@ do
     betm_abilities[key]=ability_prototype { 
         key = key,
         loc_txt = {
-            name = 'Extract',
+            name = '提取',
             text = {
                 -- "Downgrade current hand",
-                "Create a {C:dark_edition}Negative {C:planet}Planet{}", 
-                "card of current hand", 
+                "生成一张对应当前选定牌型的{C:dark_edition}负片{C:planet}星球牌",
                 -- "(Cooldown is higher before first use)",
-                'Cooldown: {C:mult}#1#/#2# #3#{}'
+                '{C:mult}#1##2#{}#3#'
         }
         },
         atlas = key, 
@@ -1164,11 +1163,11 @@ do
     betm_abilities[key]=ability_prototype { 
         key = key,
         loc_txt = {
-            name = 'Endoplasm',
+            name = '内质',
             text = { 
-                "Set a random {C:attention}consumable{}",
-                "to be {C:dark_edition}Negative{}", 
-                'Cooldown: {C:mult}#1#/#2# #3#{}'
+                "使随机一张{C:attention}消耗牌",
+                "变为{C:dark_edition}负片", 
+                '{C:mult}#1##2#{}#3#'
         }
         },
         atlas = key, 
@@ -1193,12 +1192,12 @@ do
     betm_abilities[key]=ability_prototype { 
         key = key,
         loc_txt = {
-            name = 'Pay2Win',
+            name = '氪金改命',
             text = { 
-                "Pay {C:money}$#1#{} to let blind size {X:mult,C:white}X#2#{C:attention}",
-                "and increase price by {C:money}$#3#{}", 
-                "price resets when round ends",
-                'Cooldown: None'
+                "花费{C:money}$#1#{}，使盲注分数要求{X:mult,C:white}X#2#",
+                "并使上述金额提升{C:money}$#3#", 
+                "回合结束时重置金额",
+                '{C:inactive}无冷却'
         }
         },
         atlas = key, 
@@ -1238,12 +1237,12 @@ do
     betm_abilities[key]=ability_prototype { 
         key = key,
         loc_txt = {
-            name = 'Number',
+            name = '数字',
             text = { 
-                "Select a {C:attention}Numbered{} card to be",
-                "destroyed and draw {C:attention}X{} cards",
-                "where {C:attention}X{} equals to its rank", 
-                'Cooldown: {C:mult}#1#/#2# #3#{}'
+                "摧毁选定的{C:attention}数字{}牌",
+                "并抽取{C:attention}X{}张牌",
+                "{C:attention}X{}为所摧毁牌的点数", 
+                '{C:mult}#1##2#{}#3#'
         }
         },
         atlas = key, 
@@ -1302,11 +1301,11 @@ do
     betm_abilities[key]=ability_prototype { 
         key = key,
         loc_txt = {
-            name = 'Fog',
+            name = '大雾漫天',
             text = { 
-                "During current round, {X:mult,C:white}X#4#{} Mult",
-                "but cards are drawn {C:attention}face down",
-                'Cooldown: {C:mult}#1#/#2# #3#{}'
+                "在当前回合内{X:mult,C:white}X#4#{}倍率",
+                "但抽取的卡牌均将{C:attention}背面朝上",
+                '{C:mult}#1##2#{}#3#'
         }
         },
         atlas = key, 
@@ -1350,11 +1349,10 @@ do
     betm_abilities[key]=ability_prototype { 
         key = key,
         loc_txt = {
-            name = 'Zircon',
+            name = '锆石',
             text = {
-                '{C:green}#4#%{} chance to create a', 
-                '{C:legendary,E:1}Legendary{} Joker, otherwise',
-                'create a {C:legendary,E:1}Legendary{} Voucher',
+                '有{C:green}#4#%{}的几率生成一张{C:legendary,E:1}传奇{}小丑牌',
+                '否则生成一张{C:legendary,E:1}传奇{}奖券',
                 '{C:mult}#1##2#{}#3#'
         }
         },
@@ -1538,12 +1536,12 @@ do
     betm_abilities[key]=ability_prototype { 
         key = key,
         loc_txt = {
-            name = 'Thumb',
+            name = '大拇指',
             text = {
-                "If played hand has less then 5 cards,", 
-                "{C:attention}+#1#{} hands per card below {C:attention}5",
-                "(Capped at {C:attention}+0.80{} per hand)",
-                '{C:blue}Passive{}'
+                "若打出的牌少于{C:attention}5{}张", 
+                "每少一张，{C:attention}+#1#{}出牌次数",
+                "（每次至多{C:attention}+0.80{}次出牌）",
+                '{C:blue}被动'
         }
         },
         atlas = key, 
@@ -1574,11 +1572,10 @@ do
     betm_abilities[key]=ability_prototype { 
         key = key,
         loc_txt = {
-            name = 'Shield',
+            name = '盾守底线',
             text = { 
-                "{C:attention}Hand Size{} can't", 
-                "go below {C:attention}#1#",
-                '{C:blue}Passive{}'
+                "{C:attention}手牌上限{}无法小于{C:attention}#1#",
+                '{C:blue}被动'
         }
         },
         atlas = key, 
@@ -1609,14 +1606,14 @@ end --shield
 do
     local key='shuffle'
     get_atlas(key)
-    betm_abilities[key]=ability_prototype { 
+    betm_abilities[key]=ability_prototype {
         key = key,
         loc_txt = {
-            name = 'Shuffle',
-            text = { 
-                "If no cards remain, shuffle", 
-                "all cards back into deck",
-                '{C:blue}Passive{}'
+            name = '洗牌再战',
+            text = {
+                "牌组耗尽时",
+                "将所有卡牌重新洗回",
+                '{C:blue}被动'
         }
         },
         atlas = key, 
@@ -1640,12 +1637,12 @@ do
     betm_abilities[key]=ability_prototype { 
         key = key,
         loc_txt = {
-            name = 'Dead Branch',
-            text = { 
-                "When a card is {C:attention}destroyed{}, add", 
-                "a random card with {C:attention}enhancement{},", 
-                "{C:attention}seal{} and {C:attention}edition{} into deck",
-                '{C:blue}Passive{}'
+            name = '枯枝',
+            text = {
+                "有卡牌被{C:attention}摧毁{}时",
+                "将带有随机{C:attention}增强{}、{C:attention}蜡封{}",
+                "和{C:attention}版本{}的卡牌加入牌组",
+                '{C:blue}被动'
         }
         },
         atlas = key, 
@@ -1716,11 +1713,11 @@ do
     betm_abilities[key]=ability_prototype { 
         key = key,
         loc_txt = {
-            name = 'Decay',
+            name = '衰退',
             text = { 
-                "{X:mult,C:white}X#2#{C:attention} blind size{} if played hand", 
-                "scores {C:attention}less then #1#% of blind{}", 
-                '{C:blue}Passive{}'
+                "若出牌得分{C:attention}不足盲注要求的#1#%",
+                "则使{C:attention}盲注要求{X:mult,C:white}X#2#",
+                '{C:blue}被动'
         }
         },
         atlas = key, 
@@ -1823,9 +1820,9 @@ do
     voucher_prototype{
         key='able',
         loc_txt = {
-            name = 'Able',
-            text = { 
-                "{C:attention}+#1#{} Ability Slot",
+            name = '能手',
+            text = {
+                "能力槽位{C:attention}+#1#",
             }
         },
         config={extra=1},
@@ -1843,9 +1840,9 @@ do
     voucher_prototype{
         key='capable',
         loc_txt = {
-            name = 'Capable',
+            name = '多能妙手',
             text = { 
-                "{C:attention}+#1#{} Ability Slot",
+                "能力槽位{C:attention}+#1#",
             }
         },
         config={extra=1},
@@ -1866,10 +1863,9 @@ do
     voucher_prototype{
         key='cooled_down',
         loc_txt = {
-            name = 'Cooled Down',
+            name = '加速冷却',
             text = { 
-                "Abilities cool down",
-                "{C:green}#1#%{} faster"
+                "能力冷却加速{C:green}#1#%"
             }
         },
         config={extra=50},
@@ -1883,11 +1879,10 @@ do
     voucher_prototype{
         key='cooled_below',
         loc_txt = {
-            name = 'Cooled Below',
+            name = '过度冷却',
             text = { 
-                "Abilities can cool down",
-                "into {C:attention}negative values",
-                "{C:inactive}(e.g. -2/1 round)"
+                "能力可超量冷却至{C:attention}负值",
+                "{C:inactive}（例如“-2/1回合后可用”）"
             }
         },
         config={extra=1},
