@@ -4,7 +4,7 @@
 --- MOD_AUTHOR: [Betmma]
 --- MOD_DESCRIPTION: New type of card: Abilities
 --- PREFIX: betm_abilities
---- VERSION: 1.0.2.6(20240810)
+--- VERSION: 1.0.3(20240813)
 --- BADGE_COLOUR: 8D90BF
 
 ----------------------------------------------
@@ -536,11 +536,20 @@ SMODS.ConsumableType { -- Define Ability Consumable Type
             )
         end
 
+        local consumable_pool = {}
+        if G.ACTIVE_MOD_UI then
+            for _, v in ipairs(G.P_CENTER_POOLS[self.key]) do
+                if v.mod and G.ACTIVE_MOD_UI.id == v.mod.id then consumable_pool[#consumable_pool+1] = v end
+            end
+        else
+            consumable_pool = G.P_CENTER_POOLS[self.key]
+        end
+
         local sum = 0
         for j = 1, #G.your_collection do
             for i = 1, self.collection_rows[j] do
                 sum = sum + 1
-                local center = G.P_CENTER_POOLS[self.key][sum]
+                local center = consumable_pool[sum]
                 if not center then break end
                 local card = Card(G.your_collection[j].T.x + G.your_collection[j].T.w / 2, G.your_collection[j].T.y,
                     G.CARD_W, G.CARD_H, nil, center)
@@ -550,10 +559,10 @@ SMODS.ConsumableType { -- Define Ability Consumable Type
         end
 
         local center_options = {}
-        for i = 1, math.ceil(#G.P_CENTER_POOLS[self.key] / sum) do
+        for i = 1, math.ceil(#consumable_pool / sum) do
             table.insert(center_options,
                 localize('k_page') ..
-                ' ' .. tostring(i) .. '/' .. tostring(math.ceil(#G.P_CENTER_POOLS[self.key] / sum)))
+                ' ' .. tostring(i) .. '/' .. tostring(math.ceil(#consumable_pool / sum)))
         end
 
         INIT_COLLECTION_CARD_ALERTS()
@@ -567,18 +576,16 @@ SMODS.ConsumableType { -- Define Ability Consumable Type
             colour = G.C.RED,
             no_pips = true
         }) }
-        if SMODS.Palettes[self.key] and #SMODS.Palettes[self.key].names > 1 then
-            option_nodes[#option_nodes + 1] = create_option_cycle({
-                w = 4.5,
-                scale = 0.8,
-                options = SMODS.Palettes[self.key].names,
-                opt_callback = "update_recolor",
-                current_option = G.SETTINGS.selected_colours[self.key].order,
-                type = self.key
-            })
+        local type_buf = {}
+        if G.ACTIVE_MOD_UI then
+            for _, v in ipairs(SMODS.ConsumableType.obj_buffer) do
+                if modsCollectionTally(G.P_CENTER_POOLS[v]).of > 0 then type_buf[#type_buf + 1] = v end
+            end
+        else
+            type_buf = SMODS.ConsumableType.obj_buffer
         end
         local t = create_UIBox_generic_options({
-            back_func = 'your_collection',
+            back_func = #type_buf>3 and 'your_collection_consumables' or G.ACTIVE_MOD_UI and "openModUI_"..G.ACTIVE_MOD_UI.id or 'your_collection',
             contents = {
                 { n = G.UIT.R, config = { align = "cm", minw = 2.5, padding = 0.1, r = 0.1, colour = G.C.BLACK, emboss = 0.05 }, nodes = deck_tables },
                 { n = G.UIT.R, config = { align = "cm", padding = 0 },                                                           nodes = option_nodes },
@@ -956,7 +963,7 @@ do
             
         end,
         calculate=function(self,card,context)
-            if context.joker_main then
+            if context.joker_main and card.ability.extra.value>1 then
                 -- ease_dollars(-card.ability.extra.lose)
                 -- card_eval_status_text(card, 'dollars', -card.ability.extra.lose)
                 return {
@@ -1188,19 +1195,20 @@ do
         loc_txt = {
             name = 'Pay2Win',
             text = { 
-                "Pay {C:money}$#1#{} to let",
-                "blind size {X:mult,C:white}X#2#{C:attention}", 
+                "Pay {C:money}$#1#{} to let blind size {X:mult,C:white}X#2#{C:attention}",
+                "and increase price by {C:money}$#3#{}", 
+                "price resets when round ends",
                 'Cooldown: None'
         }
         },
         atlas = key, 
-        config = {extra = {cost=5,value=60},cooldown={type='none', now=0, need=0}, },
+        config = {extra = {cost_base=2,cost=2,increment=1,value=80},cooldown={type='none', now=0, need=0}, },
         discovered = true,
         cost = 6,
         loc_vars = function(self, info_queue, card)
             local value=card.ability.extra.value
             value=math.ceil(math.min(value,95))
-            return {vars = {card.ability.extra.cost,value/100}}
+            return {vars = {card.ability.extra.cost,value/100,card.ability.extra.increment}}
         end,
         can_use = function(self,card)
             return ability_cooled_down(self,card) and G and G.STATE == G.STATES.SELECTING_HAND and G.GAME and G.GAME.current_round and (G.GAME.dollars-G.GAME.bankrupt_at)>=card.ability.extra.cost
@@ -1210,11 +1218,18 @@ do
             value=math.ceil(math.min(value,95))
             after_event(function()
                 ease_dollars(-card.ability.extra.cost)
+                card.ability.extra.cost=card.ability.extra.cost+card.ability.extra.increment
                 G.GAME.blind:wiggle()
                 G.GAME.blind.chips=TalismanCompat(G.GAME.blind.chips)*value/100 -- if current hand ends the round the displayed blind chips won't change and I don't know why
                 -- pprint(G.GAME.blind.chips)
             end)
         end,
+        calculate=function(self,card,context)
+            if context.end_of_round and card.ability.extra.cost~=card.ability.extra.cost_base then 
+                card.ability.extra.cost=card.ability.extra.cost_base
+                card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('k_reset')})
+            end
+        end
     }
 end --pay2win
 do
@@ -1281,6 +1296,54 @@ do
         end,
     }
 end --number
+do
+    local key='fog'
+    get_atlas(key)
+    betm_abilities[key]=ability_prototype { 
+        key = key,
+        loc_txt = {
+            name = 'Fog',
+            text = { 
+                "During current round, {X:mult,C:white}X#4#{} Mult",
+                "but cards are drawn {C:attention}face down",
+                'Cooldown: {C:mult}#1#/#2# #3#{}'
+        }
+        },
+        atlas = key, 
+        config = {extra = {value=2},cooldown={type='hand', now=2, need=2}, },
+        discovered = true,
+        cost = 6,
+        loc_vars = function(self, info_queue, card)
+            return {vars = {card.ability.cooldown.now,card.ability.cooldown.need,card.ability.cooldown.type..'s',card.ability.extra.value}}
+        end,
+        can_use = function(self,card)
+            return ability_cooled_down(self,card) and not (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK)
+        end,
+        use = function(self,card,area,copier)
+            G.GAME.betmma_fog=true
+            G.GAME.modifiers.prev_flipped_cards = G.GAME.modifiers.flipped_cards
+            G.GAME.modifiers.flipped_cards = 1
+        end,
+        calculate=function(self,card,context)
+            if context.joker_main and G.GAME.betmma_fog and card.ability.extra.value>1 then
+                -- ease_dollars(-card.ability.extra.lose)
+                -- card_eval_status_text(card, 'dollars', -card.ability.extra.lose)
+                return {
+                    message = localize{type='variable',key='a_xmult',vars={card.ability.extra.value}},
+                    Xmult_mod = card.ability.extra.value
+                }
+            end
+        end
+    }
+    local end_round_ref = end_round
+    function end_round()
+        G.GAME.betmma_fog=nil
+        if G.GAME.modifiers.flipped_cards==1 then
+            G.GAME.modifiers.flipped_cards=G.GAME.modifiers.prev_flipped_cards
+        end
+        end_round_ref()
+    end
+end --fog
 do
     local key='zircon'
     get_atlas(key)
